@@ -12,11 +12,18 @@
 
 ## Phase 2 — Runtime branding and safe persistence
 
-- [ ] replace player/developer-visible upstream title with `Dravakh Map Studio` while keeping Azgaar attribution;
-- [ ] remove upstream analytics identifiers from the fork runtime;
-- [ ] add a Dravakh-specific save/export entry point;
-- [ ] add a clear warning when the current map exists only in browser storage;
-- [ ] add milestone backup helper for `.map` exports.
+- [x] replace player/developer-visible upstream title with `Dravakh Map Studio` while keeping Azgaar attribution;
+- [x] remove upstream analytics identifiers from the fork runtime;
+- [x] add a Dravakh-specific save/export entry point;
+- [x] add a clear warning when the current map has changes without a durable external backup;
+- [x] add a `.map` backup helper and unload guard.
+
+Implementation notes:
+
+- runtime branding and analytics stripping are applied through `vite.config.ts` without restructuring the large `src/index.html` monolith;
+- `src/dravakh/runtime.ts` adds the Dravakh status/backup surface;
+- machine and Dropbox saves emit durable-backup events from `src/services/io/save.ts`;
+- browser IndexedDB saves are explicitly treated as local-only, not durable authoring backups.
 
 ## Phase 3 — Reproducible Dravakh baseline
 
