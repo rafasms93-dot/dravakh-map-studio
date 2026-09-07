@@ -34,6 +34,12 @@ test("Dravakh Baseline v1 loads through the real heightmap selector", async ({ p
   await page.waitForTimeout(1200);
   await expect(page.locator("#templateInput")).toHaveValue("dravakh");
 
+  const updateDialog = page.locator(".ui-dialog:visible").filter({ hasText: "Fantasy Map Generator update" });
+  if ((await updateDialog.count()) > 0) {
+    await updateDialog.locator(".ui-dialog-titlebar-close").click();
+    await expect(updateDialog).toBeHidden();
+  }
+
   await selectPreset(page, "heightmap");
   await page.waitForTimeout(800);
   const heightmapPath = testInfo.outputPath("dravakh-baseline-v1-heightmap.png");
