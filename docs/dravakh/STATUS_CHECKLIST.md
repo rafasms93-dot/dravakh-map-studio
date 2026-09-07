@@ -10,7 +10,10 @@
 - [x] durable `.map` backup protocol documented;
 - [x] map artifact directory reserved;
 - [x] upstream attribution preserved;
-- [ ] runtime title updated;
-- [ ] upstream analytics removed from fork runtime;
+- [x] runtime title updated through Vite transform;
+- [x] upstream analytics removed from fork runtime;
+- [x] Dravakh backup status panel and `.map` download helper added;
+- [x] unload warning added for changes without durable backup;
 - [ ] Pages deployment verified;
+- [ ] build verified by CI or equivalent environment;
 - [ ] reproducible Dravakh `.map` baseline created;
