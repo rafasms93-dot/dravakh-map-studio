@@ -15,9 +15,9 @@
   "author": "Azgaar; Dravakh Map Studio customization by rafasms93-dot",
   "main": "dist-electron/main.js",
   "scripts": {
-    "predev": "npm run generate:dravakh-heightmap",
+    "predev": "npm run generate:dravakh-heightmap && npm run validate:dravakh-baseline",
     "dev": "vite",
-    "prebuild": "npm run generate:dravakh-heightmap",
+    "prebuild": "npm run generate:dravakh-heightmap && npm run validate:dravakh-baseline",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "electron": "node scripts/electron.mjs",
@@ -27,6 +27,7 @@
     "sync-version": "node scripts/sync-version.js",
     "stamp-assets": "node scripts/stamp-assets.js",
     "generate:dravakh-heightmap": "node scripts/generate-dravakh-heightmap.mjs",
+    "validate:dravakh-baseline": "node scripts/validate-dravakh-baseline.mjs",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
@@ -39,6 +40,7 @@
     "@playwright/test": "^1.57.0",
     "@types/d3": "^7.4.3",
     "@types/delaunator": "^5.0.3",
+    "@types/lineclip": "^2.0.0",
     "@types/node": "^25.0.10",
     "@types/polylabel": "^2.0.0",
     "@types/three": "^0.184.1",
