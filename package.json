@@ -15,7 +15,9 @@
   "author": "Azgaar; Dravakh Map Studio customization by rafasms93-dot",
   "main": "dist-electron/main.js",
   "scripts": {
+    "predev": "npm run generate:dravakh-heightmap",
     "dev": "vite",
+    "prebuild": "npm run generate:dravakh-heightmap",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "electron": "node scripts/electron.mjs",
