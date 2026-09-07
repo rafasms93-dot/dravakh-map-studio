@@ -28,7 +28,8 @@ export const precreatedHeightmaps: Record<string, PrecreatedHeightmap> = {
   "us-centric": { id: 19, name: "US-centric" },
   "us-mainland": { id: 20, name: "US Mainland" },
   world: { id: 21, name: "World" },
-  "world-from-pacific": { id: 22, name: "World from Pacific" }
+  "world-from-pacific": { id: 22, name: "World from Pacific" },
+  dravakh: { id: 23, name: "Dravakh Baseline v1" }
 };
 
 declare global {
