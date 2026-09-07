@@ -7,8 +7,8 @@ const removeAnalytics = (html: string) =>
 
 const dravakhBranding = {
   name: "dravakh-branding",
-  transformIndexHtml: (html: string) =>
-    removeAnalytics(html)
+  transformIndexHtml: (html: string) => ({
+    html: removeAnalytics(html)
       .replace(/<title>[^<]*<\/title>/, "<title>Dravakh Map Studio</title>")
       .replace(
         /<meta name="application-name" content="[^"]*"\s*\/>/,
@@ -34,8 +34,9 @@ const dravakhBranding = {
       .replace(
         /<link rel="canonical" href="[^"]*"\s*\/>/,
         '<link rel="canonical" href="https://rafasms93-dot.github.io/dravakh-map-studio/" />'
-      )
-      .replace("</head>", '  <script type="module" src="/dravakh/runtime.ts"></script>\n  </head>')
+      ),
+    tags: [{ tag: "script", attrs: { type: "module", src: "/dravakh/runtime.ts" }, injectTo: "head" as const }]
+  })
 };
 
 const stripPwaForElectron = {
