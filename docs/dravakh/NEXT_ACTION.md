@@ -1,10 +1,13 @@
 # Next action
 
-The next implementation step is runtime-facing and should remain minimal:
+Phase 2 runtime branding and safe persistence is implemented on `dravakh-studio-v1`.
 
-- update the HTML application title and social/PWA metadata to `Dravakh Map Studio`;
-- remove the upstream Google Analytics tag from the fork runtime;
-- keep visible attribution to Azgaar in documentation/about surfaces;
-- do not restructure the large `src/index.html` monolith.
+Before map reconstruction automation, complete the remaining validation gate:
 
-After that, verify a clean build before implementing any map-generation automation.
+1. verify GitHub Actions / Pages is enabled for the fork;
+2. run a clean build;
+3. open the deployed Dravakh Map Studio;
+4. confirm visible Dravakh branding and absence of the upstream Google Analytics runtime;
+5. create a temporary map, trigger `Baixar backup .map`, reload the file and confirm compatibility.
+
+After this validation, begin Phase 3: implement a reproducible controlled physical baseline for Dravakh, then Highhallow, hydrology, exactly 15 provinces and 15/15 primary centers before routes.
