@@ -28,9 +28,12 @@ Implementation notes:
 ## Phase 3 — Reproducible Dravakh baseline
 
 - [x] implement/register a controlled deterministic physical baseline generator;
+- [x] add source-level validation for dimensions, land/water anchors and dominant relief hierarchy;
+- [x] define candidate hydrology reconstruction paths and approval rules;
+- [x] define candidate anchors for all 15 canonical provinces and landmarks;
 - [ ] verify the generated physical baseline in the Azgaar engine;
-- [ ] verify Highhallow as an island domain;
-- [ ] verify hydrology;
+- [ ] verify Highhallow as an island domain in runtime;
+- [ ] verify Azgaar-derived hydrology against the canonical plan;
 - [ ] generate or assign exactly 15 canonical provinces;
 - [ ] place and verify all 15 primary provincial centers;
 - [ ] save and reload the canonical `.map` milestone.
@@ -38,10 +41,14 @@ Implementation notes:
 Implementation notes:
 
 - `scripts/generate-dravakh-heightmap.mjs` generates `public/heightmaps/dravakh.png` deterministically using only Node.js built-ins;
-- `predev` and `prebuild` generate the asset automatically;
+- `scripts/validate-dravakh-baseline.mjs` validates the generated PNG and converts sampled grayscale values using Azgaar's precreated-heightmap height mapping;
+- `predev` and `prebuild` generate and validate the asset automatically;
+- `.github/workflows/validate-dravakh.yml` is ready to validate generation and production build when Actions is available;
 - `src/data/precreated-heightmaps.ts` registers `Dravakh Baseline v1` as a selectable precreated heightmap;
 - `maps/dravakh-baseline-v1.json` stores normalized control anchors for relief, basins, coastline and the Highhallow channel;
-- `docs/dravakh/BASELINE_V1.md` defines the review and approval gate.
+- `maps/dravakh-hydrology-plan-v1.json` stores candidate drainage control paths;
+- `maps/dravakh-province-anchors-v1.json` stores candidate province/landmark cores without hardcoding borders;
+- `docs/dravakh/BASELINE_V1.md`, `HYDROLOGY_V1.md` and `PROVINCE_PLACEMENT_V1.md` define the runtime review gates.
 
 ## Phase 4 — Routes and integration exports
 
