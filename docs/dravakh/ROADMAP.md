@@ -27,12 +27,21 @@ Implementation notes:
 
 ## Phase 3 — Reproducible Dravakh baseline
 
-- [ ] implement/import controlled physical baseline;
+- [x] implement/register a controlled deterministic physical baseline generator;
+- [ ] verify the generated physical baseline in the Azgaar engine;
 - [ ] verify Highhallow as an island domain;
 - [ ] verify hydrology;
 - [ ] generate or assign exactly 15 canonical provinces;
 - [ ] place and verify all 15 primary provincial centers;
 - [ ] save and reload the canonical `.map` milestone.
+
+Implementation notes:
+
+- `scripts/generate-dravakh-heightmap.mjs` generates `public/heightmaps/dravakh.png` deterministically using only Node.js built-ins;
+- `predev` and `prebuild` generate the asset automatically;
+- `src/data/precreated-heightmaps.ts` registers `Dravakh Baseline v1` as a selectable precreated heightmap;
+- `maps/dravakh-baseline-v1.json` stores normalized control anchors for relief, basins, coastline and the Highhallow channel;
+- `docs/dravakh/BASELINE_V1.md` defines the review and approval gate.
 
 ## Phase 4 — Routes and integration exports
 
