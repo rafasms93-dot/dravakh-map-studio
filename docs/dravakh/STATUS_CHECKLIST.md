@@ -19,7 +19,11 @@
 - [x] candidate hydrology reconstruction plan added;
 - [x] candidate anchors for all 15 provinces/landmarks added;
 - [x] validation workflow prepared;
-- [ ] GitHub Actions execution verified;
+- [x] GitHub Actions execution verified;
+- [x] deterministic baseline validation passed in CI;
+- [x] TypeScript + production build passed in CI;
+- [x] lint, unit tests, desktop build and Nix package passed on the validated head;
+- [ ] Playwright suite completed successfully on the validated head;
 - [ ] Pages deployment verified;
 - [ ] baseline visually approved inside Azgaar runtime;
 - [ ] Highhallow runtime separation approved;
