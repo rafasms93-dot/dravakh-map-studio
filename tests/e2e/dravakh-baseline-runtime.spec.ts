@@ -10,7 +10,10 @@ const selectPreset = (page: Page, name: string) =>
 test("Dravakh Baseline v1 loads through the real heightmap selector", async ({ page }, testInfo) => {
   test.setTimeout(120000);
 
-  await page.goto("/?seed=dravakh-baseline-gate&width=1280&height=720");
+  // Match the canonical Dravakh baseline aspect ratio (768 × 1152) so the
+  // visual gate does not horizontally distort the source heightmap.
+  await page.setViewportSize({ width: 900, height: 1300 });
+  await page.goto("/?seed=dravakh-baseline-gate&width=768&height=1152");
   await page.waitForFunction(() => (window as any).mapId !== undefined, { timeout: 60000 });
 
   await expect(page.locator("#dravakh-map-studio-status")).toBeAttached();
