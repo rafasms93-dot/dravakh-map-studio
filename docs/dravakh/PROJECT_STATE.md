@@ -16,6 +16,8 @@ Azgaar remains the cartographic engine and upstream source. Dravakh Map Studio a
 
 ## Approved physical geography baseline
 
+**Revision 1.1 is canonical as of 2026-09-09.**
+
 - One main vertically oriented continental mass.
 - Dreamrest in the northwest forest/lake basin.
 - Sanctum Crest as the highest north-central mountain spine.
@@ -33,7 +35,19 @@ Azgaar remains the cartographic engine and upstream source. Dravakh Map Studio a
 - Ironbank Ridge as the old rocky massif in the extreme southwest.
 - Highfest Haven on the protected southeastern coast/bay.
 
+The v1.1 refinement replaced overly concentric relief domes with asymmetric ridge chains without changing the approved coastline or land/water mask.
+
+Canonical physical milestone:
+
+`dravakh-map-v2-20260909-1141-physical-baseline.map`
+
+SHA-256: `b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814`
+
+The machine-exported milestone was reopened successfully and reproduced the saved seed, `768 × 1152` graph dimensions and full height grid exactly.
+
 ## Hydrology baseline
+
+The following is the approved intent to validate in the next phase; the derived runtime hydrology is not yet canonical.
 
 - Main river systems originate in Sanctum Crest.
 - Western meltwater can feed Dreamrest.
@@ -77,11 +91,11 @@ A prior Azgaar session in ChatGPT Work reached this state before the browser ses
   - Swiftstride Pass → fortim/passagem;
 - no principal route network had been created yet.
 
-That browser-local `.map` state is considered **lost unless independently recovered**. It must not be treated as a durable project artifact.
+That browser-local `.map` state is considered **lost unless independently recovered**. It must not be treated as a durable project artifact and does not override the current canonical physical baseline.
 
 ## Current reconstruction policy
 
-The new reconstruction must be done in a persistent, version-controlled workflow.
+The reconstruction is performed in a persistent, version-controlled workflow.
 
 Priorities:
 
@@ -94,6 +108,6 @@ Priorities:
 
 ## Next technical milestone
 
-Create a reproducible Dravakh baseline that can be saved as a `.map` file and restored without relying on browser storage.
+**Validate and approve the hydrology derived from the canonical physical baseline v1.1.**
 
-Do not start routes before the physical baseline, 15 province assignment and 15/15 main centers are verified.
+Do not start province reconstruction until the hydrology gate is complete. Do not start principal routes until the physical baseline, hydrology, 15 province assignment and 15/15 main landmarks are verified.
