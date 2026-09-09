@@ -1,6 +1,8 @@
 {
   "id": "dravakh-baseline-v1",
-  "status": "candidate",
+  "status": "canonical-physical-baseline",
+  "revision": "1.1",
+  "approvedAt": "2026-09-09",
   "game": "Dravakh: House of Habits",
   "internalProject": "Nova Valyria OS",
   "source": {
@@ -8,7 +10,15 @@
     "output": "public/heightmaps/dravakh.png",
     "width": 768,
     "height": 1152,
-    "deterministic": true
+    "deterministic": true,
+    "generatedSha256": "301046ba2d330118b1893aa1ca46ba286c5e35389679ed218632d4f2facaa415"
+  },
+  "milestone": {
+    "file": "dravakh-map-v2-20260909-1141-physical-baseline.map",
+    "sizeBytes": 4383073,
+    "sha256": "b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814",
+    "verification": "machine-exported and reloaded successfully with exact seed, 768x1152 dimensions and height-grid equality",
+    "cloudArchive": "Projeto: Nova Valyria OS / 03 — World & Design Bible / Mapa & Map Studio / Milestones / dravakh-map-v2-20260909-1141-physical-baseline-archive.zip"
   },
   "constraints": {
     "mainContinent": "single vertically oriented landmass",
