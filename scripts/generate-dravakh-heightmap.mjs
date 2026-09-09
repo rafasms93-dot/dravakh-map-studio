@@ -10,6 +10,15 @@ const OUTPUT = resolve("public/heightmaps/dravakh.png");
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const gaussian = (x, y, cx, cy, sx, sy, amplitude) =>
   amplitude * Math.exp(-0.5 * (((x - cx) / sx) ** 2 + ((y - cy) / sy) ** 2));
+const rotatedGaussian = (x, y, cx, cy, sMajor, sMinor, angle, amplitude) => {
+  const dx = x - cx;
+  const dy = y - cy;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const major = dx * cos + dy * sin;
+  const minor = -dx * sin + dy * cos;
+  return amplitude * Math.exp(-0.5 * ((major / sMajor) ** 2 + (minor / sMinor) ** 2));
+};
 
 function superellipseField(x, y, cx, cy, rx, ry, power = 2) {
   return 1 - (Math.abs((x - cx) / rx) ** power + Math.abs((y - cy) / ry) ** power);
@@ -75,26 +84,45 @@ function getHeight(x, y) {
 
   let height = onMainland ? 22 + 12 * clamp(mainField, 0, 1) : onHighhallow ? 24 + 13 * clamp(highhallow, 0, 1) : 23;
 
-  // Sanctum Crest: highest north-central spine
+  // Baseline v1.1 relief: irregular ridges replace broad circular mountain domes
+  // while preserving all canonical anchor positions and the existing land mask.
   const sanctum = [
-    [0.43, 0.15, 0.045, 0.035, 35],
-    [0.49, 0.15, 0.050, 0.040, 44],
-    [0.55, 0.17, 0.045, 0.040, 38],
-    [0.46, 0.21, 0.050, 0.040, 33],
-    [0.53, 0.24, 0.045, 0.045, 28]
+    [0.43, 0.15, 0.060, 0.018, -0.35, 24],
+    [0.49, 0.17, 0.078, 0.020, 0.10, 36],
+    [0.55, 0.18, 0.060, 0.018, 0.50, 28],
+    [0.47, 0.21, 0.060, 0.017, 0.72, 24],
+    [0.53, 0.235, 0.050, 0.016, -0.55, 20],
+    [0.49, 0.18, 0.024, 0.015, 0.15, 24]
   ];
-  for (const feature of sanctum) height += gaussian(x, y, ...feature);
+  for (const feature of sanctum) height += rotatedGaussian(x, y, ...feature);
 
-  height += gaussian(x, y, 0.64, 0.20, 0.050, 0.050, 22); // White Keep
-  height += gaussian(x, y, 0.38, 0.36, 0.045, 0.035, 18); // Soldier's Wall western shoulder
-  height += gaussian(x, y, 0.59, 0.36, 0.045, 0.035, 18); // Soldier's Wall eastern shoulder
-  height += gaussian(x, y, 0.27, 0.42, 0.035, 0.100, 15); // Citadel Reach cliffs
-  height += gaussian(x, y, 0.63, 0.51, 0.055, 0.060, 42); // Ironforge Reaches
-  height += gaussian(x, y, 0.66, 0.54, 0.035, 0.040, 24);
-  height += gaussian(x, y, 0.62, 0.65, 0.070, 0.070, 21); // Alliance High
-  height += gaussian(x, y, 0.30, 0.83, 0.065, 0.070, 35); // Ironbank Ridge
-  height += gaussian(x, y, 0.36, 0.87, 0.045, 0.050, 20);
-  height += gaussian(x, y, 0.86, 0.40, 0.040, 0.055, 30); // Highhallow relief
+  height += rotatedGaussian(x, y, 0.64, 0.20, 0.055, 0.024, 0.35, 19); // White Keep
+  height += rotatedGaussian(x, y, 0.38, 0.36, 0.055, 0.020, -0.20, 15); // Soldier's Wall western shoulder
+  height += rotatedGaussian(x, y, 0.59, 0.36, 0.055, 0.020, 0.25, 15); // Soldier's Wall eastern shoulder
+  height += rotatedGaussian(x, y, 0.27, 0.42, 0.100, 0.025, Math.PI / 2, 13); // Citadel Reach cliffs
+
+  const ironforge = [
+    [0.61, 0.49, 0.070, 0.018, 0.65, 24],
+    [0.65, 0.535, 0.065, 0.017, -0.55, 22],
+    [0.63, 0.51, 0.030, 0.016, 0.05, 18]
+  ];
+  for (const feature of ironforge) height += rotatedGaussian(x, y, ...feature);
+
+  height += rotatedGaussian(x, y, 0.62, 0.65, 0.080, 0.026, -0.45, 18); // Alliance High
+
+  const ironbank = [
+    [0.28, 0.81, 0.070, 0.018, -0.40, 22],
+    [0.34, 0.86, 0.070, 0.018, 0.55, 20],
+    [0.30, 0.83, 0.032, 0.017, 0.10, 16]
+  ];
+  for (const feature of ironbank) height += rotatedGaussian(x, y, ...feature);
+
+  const highhallowRelief = [
+    [0.85, 0.38, 0.045, 0.013, 0.55, 18],
+    [0.87, 0.43, 0.042, 0.013, -0.65, 16],
+    [0.86, 0.40, 0.024, 0.014, 0.05, 12]
+  ];
+  for (const feature of highhallowRelief) height += rotatedGaussian(x, y, ...feature);
 
   // Lower basins: Dreamrest, Hearthkeep and the Rivermend / Harvest Hall system
   height -= gaussian(x, y, 0.29, 0.22, 0.110, 0.080, 7);
