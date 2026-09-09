@@ -2,7 +2,9 @@
 
 ## Status
 
-Candidate technical baseline for Phase 3. This is not final cartographic art and is not yet a canonical `.map` milestone.
+**Canonical physical baseline — revision 1.1, approved 2026-09-09.**
+
+The deterministic physical geography has passed programmatic validation, runtime visual review, machine `.map` export and `.map` reload verification. It is now the cartographic source for the hydrology phase.
 
 ## Generation
 
@@ -17,6 +19,11 @@ The generator writes:
 `public/heightmaps/dravakh.png`
 
 It uses only Node.js built-ins and deterministic mathematical fields. No random runtime seed is required, so the same source version produces the same grayscale source image.
+
+Approved generated asset for revision 1.1:
+
+- dimensions: `768 × 1152`;
+- SHA-256: `301046ba2d330118b1893aa1ca46ba286c5e35389679ed218632d4f2facaa415`.
 
 ## Geometry intent
 
@@ -43,11 +50,13 @@ The generated heightmap encodes the approved physical macrogeography:
 - Hearthkeep: moderated central basin;
 - Rivermend / Harvest Hall: lower center-south alluvial basin.
 
+Revision 1.1 replaced overly concentric relief domes with asymmetric ridge chains while preserving the approved coastline, land/water mask, Highhallow channel, basins and macro anchors.
+
 ## Hydrology
 
 The heightmap does not paint rivers directly. Rivers remain a derived Azgaar layer and must be generated from relief, then reviewed for believable drainage.
 
-Required review after import/generation:
+Required hydrology review:
 
 1. principal sources originate around Sanctum Crest;
 2. western drainage can feed Dreamrest;
@@ -57,16 +66,23 @@ Required review after import/generation:
 6. Highfest Haven does not receive an arbitrary giant river;
 7. Highhallow uses short island drainage only.
 
-## Approval gate
+## Approval gate — complete
 
-Before this baseline becomes canonical:
+- [x] generate `dravakh.png`;
+- [x] register/select it in Dravakh Map Studio;
+- [x] inspect the physical result in the Azgaar engine at the native `768 × 1152` ratio;
+- [x] correct coastline/relief defects;
+- [x] save a machine `.map` backup;
+- [x] reload the `.map` and verify it;
+- [x] mark the physical baseline as approved.
 
-1. generate `dravakh.png`;
-2. import/register it in Dravakh Map Studio;
-3. inspect the physical result in the Azgaar engine;
-4. correct any coastline/relief defects;
-5. save a machine `.map` backup;
-6. reload the `.map` and verify it;
-7. only then mark the physical baseline as approved.
+Approved milestone:
 
-No province assignment or principal route generation should be treated as canonical before this gate is complete.
+`dravakh-map-v2-20260909-1141-physical-baseline.map`
+
+- size: `4,383,073 bytes`;
+- SHA-256: `b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814`;
+- reload verification: exact map name, seed, graph dimensions and full height-grid equality;
+- cloud archive: `Projeto: Nova Valyria OS / 03 — World & Design Bible / Mapa & Map Studio / Milestones`.
+
+No principal routes should be treated as canonical before hydrology, province assignment and landmark gates are complete.
