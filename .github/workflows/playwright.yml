@@ -39,8 +39,11 @@ jobs:
         uses: actions/cache@v6
         with:
           path: dist/
-          key: dist-${{ hashFiles('src/**', 'public/**', 'vite.config.ts',
-            'tsconfig.json', 'package-lock.json') }}
+          # The Dravakh heightmap is generated during prebuild, so generator and
+          # validator changes must invalidate dist even when public/ is unchanged.
+          key: dist-${{ hashFiles('src/**', 'public/**', 'scripts/generate-dravakh-heightmap.mjs',
+            'scripts/validate-dravakh-baseline.mjs', 'vite.config.ts', 'tsconfig.json',
+            'package.json', 'package-lock.json') }}
       - name: Build app
         if: steps.dist-cache.outputs.cache-hit != 'true'
         run: npm run build
