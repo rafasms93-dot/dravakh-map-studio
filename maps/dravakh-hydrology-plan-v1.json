@@ -1,0 +1,84 @@
+{
+  "id": "dravakh-hydrology-plan-v1",
+  "status": "candidate-technical-plan",
+  "coordinateSystem": "normalized x/y in generated Dravakh baseline",
+  "principle": "relief -> drainage -> rivers; rivers must never be placed independently of terrain",
+  "rules": [
+    "The principal continental drainage originates in Sanctum Crest.",
+    "The dominant southbound system crosses the northern choke and converges in Rivermend.",
+    "Dreamrest receives western meltwater and may contain lakes/wetlands.",
+    "White Keep receives eastern meltwater draining toward the northeastern coast.",
+    "Ironforge Reaches contributes tributaries but is not the primary continental source.",
+    "Harvest Hall is an alluvial lowland fed by the southern drainage system.",
+    "Highfest Haven uses smaller regional watercourses and must not receive an arbitrary giant river through its port.",
+    "Highhallow uses short island streams/cascades only."
+  ],
+  "systems": [
+    {
+      "id": "sanctum-rivermend-main",
+      "role": "principal continental river",
+      "points": [
+        { "x": 0.49, "y": 0.23, "role": "Sanctum source" },
+        { "x": 0.50, "y": 0.36, "role": "Soldier's Wall choke" },
+        { "x": 0.49, "y": 0.52, "role": "central valley" },
+        { "x": 0.49, "y": 0.69, "role": "Rivermend confluence" },
+        { "x": 0.58, "y": 0.82, "role": "southern lower course" },
+        { "x": 0.70, "y": 0.90, "role": "ocean outlet candidate" }
+      ]
+    },
+    {
+      "id": "dreamrest-meltwater",
+      "role": "western northern drainage",
+      "points": [
+        { "x": 0.43, "y": 0.20, "role": "western Sanctum snowmelt" },
+        { "x": 0.34, "y": 0.23, "role": "Dreamrest upper basin" },
+        { "x": 0.29, "y": 0.28, "role": "Dreamrest lake/wetland candidate" }
+      ]
+    },
+    {
+      "id": "white-keep-meltwater",
+      "role": "northeastern drainage",
+      "points": [
+        { "x": 0.56, "y": 0.20, "role": "eastern Sanctum snowmelt" },
+        { "x": 0.64, "y": 0.23, "role": "White Keep valley" },
+        { "x": 0.73, "y": 0.20, "role": "northeastern coastal outlet candidate" }
+      ]
+    },
+    {
+      "id": "ironforge-tributary",
+      "role": "center-east tributary",
+      "points": [
+        { "x": 0.62, "y": 0.54, "role": "Ironforge flank" },
+        { "x": 0.57, "y": 0.61, "role": "east-central valley" },
+        { "x": 0.51, "y": 0.68, "role": "Rivermend tributary junction" }
+      ]
+    },
+    {
+      "id": "harvest-alluvial-branch",
+      "role": "southwestern distributary/alluvial branch",
+      "points": [
+        { "x": 0.47, "y": 0.70, "role": "Rivermend western branch" },
+        { "x": 0.39, "y": 0.75, "role": "Harvest Hall alluvial plain" },
+        { "x": 0.34, "y": 0.80, "role": "lower plain" }
+      ]
+    },
+    {
+      "id": "highfest-local-stream",
+      "role": "small southeastern regional watercourse",
+      "points": [
+        { "x": 0.61, "y": 0.69, "role": "Alliance High foothill source" },
+        { "x": 0.63, "y": 0.75, "role": "Highfest hinterland" },
+        { "x": 0.70, "y": 0.80, "role": "Highfest Haven bay" }
+      ]
+    },
+    {
+      "id": "highhallow-short-stream",
+      "role": "short insular drainage",
+      "points": [
+        { "x": 0.86, "y": 0.36, "role": "island upland" },
+        { "x": 0.87, "y": 0.42, "role": "short cascade/stream" },
+        { "x": 0.94, "y": 0.43, "role": "island coastal outlet candidate" }
+      ]
+    }
+  ]
+}

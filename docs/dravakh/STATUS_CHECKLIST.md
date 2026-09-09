@@ -1,0 +1,33 @@
+# Status checklist
+
+- [x] fork confirmed writable;
+- [x] isolated development branch created;
+- [x] package product metadata updated;
+- [x] PWA metadata updated;
+- [x] GitHub Pages workflow prepared for Dravakh branch;
+- [x] canonical Dravakh project/province data added;
+- [x] lost Work-session state documented;
+- [x] durable `.map` backup protocol documented;
+- [x] map artifact directory reserved;
+- [x] upstream attribution preserved;
+- [x] runtime title updated through Vite;
+- [x] upstream analytics removed from fork runtime;
+- [x] Dravakh `.map` backup surface implemented;
+- [x] deterministic physical baseline generator added;
+- [x] `Dravakh Baseline v1` registered in precreated heightmaps;
+- [x] deterministic source validation added for the baseline PNG;
+- [x] candidate hydrology reconstruction plan added;
+- [x] candidate anchors for all 15 provinces/landmarks added;
+- [x] validation workflow prepared;
+- [x] GitHub Actions execution verified;
+- [x] deterministic baseline validation passed in CI;
+- [x] TypeScript + production build passed in CI;
+- [x] lint, unit tests, desktop build and Nix package passed on the validated head;
+- [ ] Playwright suite completed successfully on the validated head;
+- [ ] Pages deployment verified;
+- [ ] baseline visually approved inside Azgaar runtime;
+- [ ] Highhallow runtime separation approved;
+- [ ] Azgaar-derived hydrology approved;
+- [ ] exactly 15 canonical provinces reconstructed and approved;
+- [ ] 15/15 primary landmarks placed and approved;
+- [ ] durable `.map` exported and successfully reloaded;
