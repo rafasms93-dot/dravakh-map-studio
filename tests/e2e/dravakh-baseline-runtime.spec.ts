@@ -7,6 +7,15 @@ const selectPreset = (page: Page, name: string) =>
     select.dispatchEvent(new Event("change"));
   }, name);
 
+const dismissUpdateDialog = async (page: Page) => {
+  const updateDialog = page.locator(".ui-dialog").filter({ hasText: "Fantasy Map Generator update" }).last();
+  await updateDialog.waitFor({ state: "visible", timeout: 5000 }).catch(() => undefined);
+  if (await updateDialog.isVisible()) {
+    await updateDialog.locator(".ui-dialog-titlebar-close").click();
+    await expect(updateDialog).toBeHidden();
+  }
+};
+
 test("Dravakh Baseline v1 loads through the real heightmap selector", async ({ page }, testInfo) => {
   test.setTimeout(120000);
 
@@ -37,14 +46,9 @@ test("Dravakh Baseline v1 loads through the real heightmap selector", async ({ p
   await page.waitForTimeout(1200);
   await expect(page.locator("#templateInput")).toHaveValue("dravakh");
 
-  const updateDialog = page.locator(".ui-dialog:visible").filter({ hasText: "Fantasy Map Generator update" });
-  if ((await updateDialog.count()) > 0) {
-    await updateDialog.locator(".ui-dialog-titlebar-close").click();
-    await expect(updateDialog).toBeHidden();
-  }
-
   await selectPreset(page, "heightmap");
   await page.waitForTimeout(800);
+  await dismissUpdateDialog(page);
   const heightmapPath = testInfo.outputPath("dravakh-baseline-v1-heightmap.png");
   await page.locator("#map").screenshot({ path: heightmapPath });
   await testInfo.attach("Dravakh Baseline v1 — heightmap", {
@@ -54,6 +58,7 @@ test("Dravakh Baseline v1 loads through the real heightmap selector", async ({ p
 
   await selectPreset(page, "physical");
   await page.waitForTimeout(800);
+  await dismissUpdateDialog(page);
   const physicalPath = testInfo.outputPath("dravakh-baseline-v1-physical.png");
   await page.locator("#map").screenshot({ path: physicalPath });
   await testInfo.attach("Dravakh Baseline v1 — physical", {
