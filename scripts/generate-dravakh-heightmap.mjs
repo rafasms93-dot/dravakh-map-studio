@@ -130,6 +130,20 @@ function getHeight(x, y) {
   height -= gaussian(x, y, 0.49, 0.69, 0.110, 0.100, 9);
   height -= gaussian(x, y, 0.34, 0.72, 0.120, 0.090, 5);
 
+  // Hydrology v1: a shallow, terrain-derived drainage corridor links Sanctum's
+  // southern snowmelt to the Soldier's Wall choke, Hearthkeep, Rivermend and a
+  // southern outlet. It shapes drainage only; rivers remain fully Azgaar-derived.
+  const mainDrainage = [
+    [0.495, 0.255, 0.060, 0.014, Math.PI / 2, 3.5],
+    [0.500, 0.340, 0.105, 0.020, Math.PI / 2, 5.0],
+    [0.495, 0.475, 0.145, 0.026, Math.PI / 2, 6.0],
+    [0.495, 0.620, 0.155, 0.032, Math.PI / 2, 7.0],
+    [0.510, 0.755, 0.165, 0.038, Math.PI / 2, 7.5],
+    [0.555, 0.875, 0.145, 0.038, 1.05, 7.0],
+    [0.605, 0.945, 0.090, 0.034, 0.95, 5.0]
+  ];
+  for (const feature of mainDrainage) height -= rotatedGaussian(x, y, ...feature);
+
   height += terrainNoise(x, y);
   return clamp(height, 20.5, 100);
 }
