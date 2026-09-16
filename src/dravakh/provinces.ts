@@ -180,10 +180,13 @@ function assignDetachedFeatures(provinceIds: Uint16Array): void {
   }
 
   for (const cells of detached.values()) {
-    const center = cells.reduce<[number, number]>((sum, cell) => {
-      const [x, y] = normalizedPoint(cell);
-      return [sum[0] + x, sum[1] + y];
-    }, [0, 0]);
+    const center = cells.reduce<[number, number]>(
+      (sum, cell) => {
+        const [x, y] = normalizedPoint(cell);
+        return [sum[0] + x, sum[1] + y];
+      },
+      [0, 0]
+    );
     center[0] /= cells.length;
     center[1] /= cells.length;
 
@@ -195,7 +198,7 @@ function assignDetachedFeatures(provinceIds: Uint16Array): void {
       bestDistance = distance;
       province = index + 1;
     });
-    cells.forEach(cell => (provinceIds[cell] = province));
+    for (const cell of cells) provinceIds[cell] = province;
   }
 }
 
@@ -246,7 +249,8 @@ export function applyDravakhProvinces() {
   }
 
   const seedCells = CANONICAL_ANCHORS.map(anchor => nearestLandCell(anchor.x, anchor.y));
-  if (new Set(seedCells).size !== 15) throw new Error("Dravakh province anchors must resolve to 15 distinct land cells");
+  if (new Set(seedCells).size !== 15)
+    throw new Error("Dravakh province anchors must resolve to 15 distinct land cells");
 
   const provinceIds = assignConnectedLand(seedCells);
   assignDetachedFeatures(provinceIds);
