@@ -26,7 +26,7 @@ const COLORS = [
 ] as const;
 
 const SHAPES: Record<string, ProvinceShape> = {
-  "dreamrest": { xWeight: 1, yWeight: 1, terrain: "lowland" },
+  dreamrest: { xWeight: 1, yWeight: 1, terrain: "lowland" },
   "sanctum-crest": { xWeight: 1, yWeight: 0.85, terrain: "highland" },
   "white-keep": { xWeight: 1, yWeight: 1, terrain: "highland" },
   highhallow: { xWeight: 1, yWeight: 1, terrain: "highland" },
@@ -43,6 +43,12 @@ const SHAPES: Record<string, ProvinceShape> = {
   "highfest-haven": { xWeight: 1, yWeight: 1, terrain: "lowland" }
 };
 
+const CANONICAL_ANCHORS = DRAVAKH_PROVINCES.map(definition => {
+  const anchor = provincePlan.provinces.find(candidate => candidate.id === definition.id);
+  if (!anchor) throw new Error(`Missing Dravakh province anchor: ${definition.id}`);
+  return anchor;
+});
+
 class MinHeap {
   private items: QueueItem[] = [];
 
@@ -51,14 +57,14 @@ class MinHeap {
   }
 
   push(item: QueueItem) {
+    let index = this.items.length;
     this.items.push(item);
-    for (let index = this.items.length - 1; index > 0; ) {
+    while (index > 0) {
       const parent = Math.floor((index - 1) / 2);
       if (this.items[parent].cost <= item.cost) break;
       this.items[index] = this.items[parent];
       index = parent;
     }
-    let index = this.items.indexOf(item);
     this.items[index] = item;
   }
 
@@ -123,7 +129,7 @@ function terrainPenalty(height: number, terrain: TerrainBias): number {
 }
 
 function edgeCost(from: number, to: number, provinceId: number): number {
-  const definition = provincePlan.provinces[provinceId - 1];
+  const definition = DRAVAKH_PROVINCES[provinceId - 1];
   const shape = SHAPES[definition.id];
   const [x1, y1] = normalizedPoint(from);
   const [x2, y2] = normalizedPoint(to);
@@ -183,7 +189,7 @@ function assignDetachedFeatures(provinceIds: Uint16Array): void {
 
     let province = 1;
     let bestDistance = Infinity;
-    provincePlan.provinces.forEach((anchor, index) => {
+    CANONICAL_ANCHORS.forEach((anchor, index) => {
       const distance = (center[0] - anchor.x) ** 2 + (center[1] - anchor.y) ** 2;
       if (distance >= bestDistance) return;
       bestDistance = distance;
@@ -239,14 +245,14 @@ export function applyDravakhProvinces() {
     throw new Error("Dravakh province partition requires exactly 15 canonical definitions");
   }
 
-  const seedCells = provincePlan.provinces.map(anchor => nearestLandCell(anchor.x, anchor.y));
+  const seedCells = CANONICAL_ANCHORS.map(anchor => nearestLandCell(anchor.x, anchor.y));
   if (new Set(seedCells).size !== 15) throw new Error("Dravakh province anchors must resolve to 15 distinct land cells");
 
   const provinceIds = assignConnectedLand(seedCells);
   assignDetachedFeatures(provinceIds);
   pack.cells.province = provinceIds;
 
-  const hearthkeepIndex = provincePlan.provinces.findIndex(province => province.id === "hearthkeep");
+  const hearthkeepIndex = DRAVAKH_PROVINCES.findIndex(province => province.id === "hearthkeep");
   const state = normalizeKingdom(seedCells[hearthkeepIndex], provinceIds);
 
   const provinces: Province[] = [0 as unknown as Province];
