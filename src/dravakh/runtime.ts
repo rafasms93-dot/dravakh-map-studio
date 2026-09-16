@@ -1,3 +1,7 @@
+import { drawBorders } from "@/renderers/draw-borders";
+import { drawProvinces } from "@/renderers/draw-provinces";
+import { applyDravakhProvinces } from "./provinces";
+
 type SaveMethod = "storage" | "machine" | "dropbox";
 
 type StudioSaveService = {
@@ -7,6 +11,9 @@ type StudioSaveService = {
 type StudioWindow = Window & {
   Services?: {
     Save?: StudioSaveService;
+  };
+  DravakhProvinces?: {
+    apply: typeof applyDravakhProvinces;
   };
 };
 
@@ -92,12 +99,24 @@ function createStudioPanel(): { panel: HTMLDivElement; status: HTMLSpanElement; 
   return { panel, status, backupButton };
 }
 
+function applyCanonicalProvinceLayer(): void {
+  const template = document.getElementById("templateInput") as HTMLInputElement | null;
+  if (template?.value !== "dravakh") return;
+
+  const summary = applyDravakhProvinces();
+  drawProvinces();
+  drawBorders();
+  window.dispatchEvent(new CustomEvent("dravakh:provinces-applied", { detail: summary }));
+}
+
 function installRuntime(): void {
   if (document.getElementById(PANEL_ID)) return;
 
   document.title = "Dravakh Map Studio";
   const { panel, status, backupButton } = createStudioPanel();
   document.body.append(panel);
+  (window as StudioWindow).DravakhProvinces = { apply: applyDravakhProvinces };
+  window.addEventListener("map:generated", applyCanonicalProvinceLayer);
 
   const renderStatus = (): void => {
     if (dirty) {
