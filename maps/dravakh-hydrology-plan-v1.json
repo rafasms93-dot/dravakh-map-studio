@@ -1,8 +1,30 @@
 {
   "id": "dravakh-hydrology-plan-v1",
-  "status": "candidate-technical-plan",
+  "status": "canonical-hydrology-v1",
   "coordinateSystem": "normalized x/y in generated Dravakh baseline",
   "principle": "relief -> drainage -> rivers; rivers must never be placed independently of terrain",
+  "pathSemantics": "control points are review constraints only; accepted river geometry remains terrain-derived by Azgaar and may meander between them",
+  "generatedRiverNamesCanonical": false,
+  "approval": {
+    "date": "2026-09-16",
+    "validationHead": "e917a4e59bf135261eed7d7a9a91d55a997ca37f",
+    "sourceHeightmapSha256": "de46853a423486fae9dde8b44c4e089d924760fa38ee4bca3ab0af16a5058c3b",
+    "milestone": "dravakh-map-v2-20260916-1635-hydrology-v1.map",
+    "milestoneSha256": "160afd20c8ad13abae1c15acf90dfc541fdac2935a9a1451a17bb94f12aec71e",
+    "milestoneBytes": 4494612,
+    "runtimeEvidence": {
+      "dominantRiverId": 134,
+      "dominantGeneratedName": "Athre",
+      "dominantDischarge": 12705,
+      "runnerUpDischarge": 3721,
+      "dominanceRatio": 3.4144,
+      "dominantSource": { "x": 0.5178515625, "y": 0.2799131944 },
+      "dominantMouth": { "x": 0.6790494792, "y": 0.9406336806 },
+      "highfestObservedMaxLocalDischarge": 161,
+      "highhallowObservedMaxLength": 70.66,
+      "highhallowObservedMaxDischarge": 227
+    }
+  },
   "rules": [
     "The principal continental drainage originates in Sanctum Crest.",
     "The dominant southbound system crosses the northern choke and converges in Rivermend.",
