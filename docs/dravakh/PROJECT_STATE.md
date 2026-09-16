@@ -45,17 +45,36 @@ SHA-256: `b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814`
 
 The machine-exported milestone was reopened successfully and reproduced the saved seed, `768 × 1152` graph dimensions and full height grid exactly.
 
-## Hydrology baseline
+## Approved hydrology baseline
 
-The following is the approved intent to validate in the next phase; the derived runtime hydrology is not yet canonical.
+**Hydrology v1 is canonical as of 2026-09-16.**
 
-- Main river systems originate in Sanctum Crest.
-- Western meltwater can feed Dreamrest.
-- Eastern drainage can reach White Keep.
-- The dominant river system flows south and converges in Rivermend.
-- Harvest Hall is sustained by the southern alluvial system.
-- Highfest Haven uses smaller regional watercourses; no arbitrary giant river through the city.
-- Rivers must follow relief and believable drainage.
+The accepted river network is derived from terrain by Azgaar. A shallow drainage corridor was added to the physical relief only where needed to establish the canonical north-south watershed; final river geometry itself remains generated from relief and drainage.
+
+Canonical hydrology behavior:
+
+- the dominant continental system originates on the southern Sanctum Crest flank;
+- western Sanctum meltwater still feeds Dreamrest as a strong secondary system;
+- White Keep retains independent northeastern meltwater drainage;
+- the dominant river crosses the Soldier's Wall choke and follows the central valley;
+- Rivermend is the dominant center-south convergence zone;
+- Ironforge Reaches contributes tributaries to the dominant basin;
+- Harvest Hall receives alluvial tributaries from that basin;
+- Highfest Haven retains smaller local streams and no giant river through the port region;
+- Highhallow retains only short, locally scaled island streams;
+- river geometry does not override ridges or the approved coastline.
+
+Approval-run evidence showed a dominant root-system discharge of `12705` against `3721` for the second-largest root system. Runtime-generated river names are diagnostic only and are **not canonical lore**.
+
+Canonical hydrology milestone:
+
+`dravakh-map-v2-20260916-1635-hydrology-v1.map`
+
+SHA-256: `160afd20c8ad13abae1c15acf90dfc541fdac2935a9a1451a17bb94f12aec71e`
+
+The milestone was reopened successfully and reproduced the map name, seed, graph dimensions, full height grid and serialized river topology exactly.
+
+The physical-baseline milestone remains preserved separately and must not be overwritten by later milestones.
 
 ## Canonical provinces
 
@@ -77,6 +96,8 @@ Exactly 15 provinces must exist:
 14. Highfest Haven — House Merraval — Lazer
 15. Ironbank Ridge — House Ferrane — Finanças
 
+Province names, houses and category bindings are canonical. Current province boundaries have not yet been reconstructed on the new persistent baseline.
+
 ## Lost Work-session state
 
 A prior Azgaar session in ChatGPT Work reached this state before the browser session was lost:
@@ -91,7 +112,7 @@ A prior Azgaar session in ChatGPT Work reached this state before the browser ses
   - Swiftstride Pass → fortim/passagem;
 - no principal route network had been created yet.
 
-That browser-local `.map` state is considered **lost unless independently recovered**. It must not be treated as a durable project artifact and does not override the current canonical physical baseline.
+That browser-local `.map` state is considered **lost unless independently recovered**. It must not be treated as a durable project artifact and does not override the current canonical physical or hydrology milestones.
 
 ## Current reconstruction policy
 
@@ -106,8 +127,12 @@ Priorities:
 5. keep the main game repository independent from Azgaar runtime internals;
 6. use Dravakh Map Studio as a cartographic authoring tool, not as the final in-game UI.
 
+The dedicated `Validate Dravakh Map Gate` workflow is the focused runtime gate for map-specific changes. Full repository CI remains the general regression gate.
+
 ## Next technical milestone
 
-**Validate and approve the hydrology derived from the canonical physical baseline v1.1.**
+**Reconstruct and approve exactly 15 canonical province geometries on top of the canonical physical and hydrology baselines.**
 
-Do not start province reconstruction until the hydrology gate is complete. Do not start principal routes until the physical baseline, hydrology, 15 province assignment and 15/15 main landmarks are verified.
+Province anchors are guidance, not rigid polygon geometry. Borders should follow believable geography and the approved world structure.
+
+Do not place the full landmark layer before the 15-province geometry gate is complete. Do not start principal routes until the physical baseline, hydrology, 15 province assignment and 15/15 main landmarks are verified.
