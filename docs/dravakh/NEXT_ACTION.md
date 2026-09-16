@@ -1,28 +1,12 @@
 # Next action
 
-Phase 3 physical-baseline gate is complete.
+The physical-baseline and hydrology gates are complete.
 
 ## Current validated state
 
-The Dravakh physical baseline revision 1.1 is now canonical for the next cartographic phase.
+The Dravakh physical baseline revision 1.1 and Hydrology v1 are canonical inputs for the next cartographic phase.
 
-Validated on 2026-09-09 through GitHub Actions and the Dravakh runtime:
-
-- deterministic heightmap generation passed;
-- invariant validation passed;
-- TypeScript + production build passed;
-- lint passed;
-- unit tests passed;
-- desktop build passed;
-- Nix package passed;
-- Playwright passed with a rebuilt Dravakh-aware `dist`;
-- the baseline was selected through the real Azgaar heightmap selector at `768 × 1152`;
-- visual review confirmed the vertical continent, Highhallow separation, Sanctum chain, Ironforge, Ironbank, center-south basin and southeastern bay;
-- a real machine `.map` was exported;
-- the exported `.map` was reloaded successfully;
-- reload preserved exact map name, seed, graph dimensions and the complete height grid.
-
-Canonical physical milestone:
+Physical baseline milestone:
 
 `dravakh-map-v2-20260909-1141-physical-baseline.map`
 
@@ -30,31 +14,57 @@ SHA-256:
 
 `b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814`
 
-Cloud archive:
+Hydrology milestone:
 
-`Projeto: Nova Valyria OS / 03 — World & Design Bible / Mapa & Map Studio / Milestones`
+`dravakh-map-v2-20260916-1635-hydrology-v1.map`
+
+SHA-256:
+
+`160afd20c8ad13abae1c15acf90dfc541fdac2935a9a1451a17bb94f12aec71e`
+
+Hydrology validation confirmed:
+
+- the dominant river system originates on the southern Sanctum flank;
+- it crosses the Soldier's Wall choke;
+- it follows the central valley and converges through Rivermend;
+- it remains the clear dominant continental basin;
+- Dreamrest retains independent western meltwater drainage;
+- White Keep retains northeastern meltwater drainage;
+- Ironforge contributes tributaries to the dominant basin;
+- Harvest Hall receives alluvial tributaries;
+- Highfest Haven has only locally scaled streams in its port region;
+- Highhallow has short, locally scaled island rivers;
+- the river network is terrain-derived, not hardcoded;
+- `.map` reload reproduced both the height grid and river topology exactly;
+- durable milestone archives exist outside browser storage.
+
+The dedicated `Validate Dravakh Map Gate` workflow now provides a focused runtime regression gate for Dravakh map changes. The full repository CI remains required as the general regression suite.
 
 ## Current source state
 
-- deterministic generator: `scripts/generate-dravakh-heightmap.mjs`;
-- generated asset target: `public/heightmaps/dravakh.png`;
-- deterministic validator: `scripts/validate-dravakh-baseline.mjs`;
-- automatic generation + validation before `dev` and `build`;
-- selectable Azgaar entry: `Dravakh Baseline v1`;
+- deterministic physical generator: `scripts/generate-dravakh-heightmap.mjs`;
+- generated source asset: `public/heightmaps/dravakh.png`;
+- deterministic physical validator: `scripts/validate-dravakh-baseline.mjs`;
 - canonical physical metadata: `maps/dravakh-baseline-v1.json`;
-- candidate hydrology plan: `maps/dravakh-hydrology-plan-v1.json`;
-- candidate 15-province/landmark anchors: `maps/dravakh-province-anchors-v1.json`.
+- canonical hydrology constraints/evidence: `maps/dravakh-hydrology-plan-v1.json`;
+- province/landmark reconstruction anchors: `maps/dravakh-province-anchors-v1.json`;
+- focused runtime gate: `.github/workflows/validate-dravakh-map-gate.yml`.
 
-## Next runtime gate — hydrology
+## Next runtime gate — 15 canonical provinces
 
-1. load the canonical physical baseline;
-2. inspect the rivers Azgaar derives from revision 1.1 relief;
-3. compare the derived drainage against `dravakh-hydrology-plan-v1.json`;
-4. verify Sanctum-origin drainage, Dreamrest/White Keep branches, the dominant south-flowing system, Rivermend convergence, Harvest Hall alluvial support, Highfest Haven scale and short Highhallow drainage;
-5. correct only hydrologically necessary defects while preserving the approved physical macrogeography;
-6. rerun programmatic and visual gates;
-7. export a new machine `.map` milestone after hydrology approval;
-8. reload and verify that hydrology milestone;
-9. only then reconstruct exactly 15 provinces around `dravakh-province-anchors-v1.json`.
+1. load the canonical Hydrology v1 milestone/state;
+2. inspect `maps/dravakh-province-anchors-v1.json` as placement guidance, not as rigid polygon geometry;
+3. reconstruct exactly the 15 approved provinces and no others;
+4. make borders follow physical geography, watershed logic, coastlines, mountain systems and the Highhallow maritime separation where appropriate;
+5. preserve the category → province mapping already approved by the project;
+6. treat Soldier's Wall as the special Discipline province without inventing conventional XP behavior here;
+7. verify that Highhallow remains fully insular and territorially independent;
+8. visually review province balance and spatial legibility in the Map Studio runtime;
+9. add deterministic/runtime regression checks for province count and canonical identities;
+10. export a new machine `.map` milestone only after the 15-province geometry is approved;
+11. reload that milestone and verify the province assignment survives intact;
+12. archive a second durable copy before proceeding to landmarks.
 
-Do not create principal routes until the physical baseline, hydrology, 15 provinces and 15/15 landmarks pass review.
+Do not place the 15 primary landmarks until the province geometry gate is approved.
+
+Do not create principal routes until the physical baseline, hydrology, 15 provinces and 15/15 landmarks have all passed review.
