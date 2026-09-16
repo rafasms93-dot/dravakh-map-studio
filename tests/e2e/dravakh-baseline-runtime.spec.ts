@@ -67,6 +67,45 @@ test("Dravakh Baseline v1 loads through the real heightmap selector", async ({ p
     contentType: "image/png"
   });
 
+  // Hydrology gate evidence. Rivers are not hardcoded: this captures exactly
+  // what Azgaar derived from the current relief, precipitation and drainage.
+  const hydrology = await page.evaluate(() => {
+    const world = window as any;
+    const { pack, graphWidth, graphHeight } = world;
+    const points = pack.cells.p as [number, number][];
+    const normalize = (point: [number, number] | undefined) =>
+      point ? [point[0] / graphWidth, point[1] / graphHeight] : null;
+
+    return (pack.rivers as any[]).map(river => ({
+      i: river.i,
+      name: river.name,
+      type: river.type,
+      source: river.source,
+      mouth: river.mouth,
+      parent: river.parent,
+      basin: river.basin,
+      length: river.length,
+      discharge: river.discharge,
+      width: river.width,
+      sourcePoint: normalize(points[river.source]),
+      mouthPoint: normalize(points[river.mouth]),
+      path: river.cells.filter((cell: number) => cell >= 0).map((cell: number) => normalize(points[cell]))
+    }));
+  });
+
+  expect(hydrology.length).toBeGreaterThan(0);
+  await testInfo.attach("Dravakh Hydrology v1 — derived river data", {
+    body: Buffer.from(JSON.stringify({ width: 768, height: 1152, rivers: hydrology }, null, 2)),
+    contentType: "application/json"
+  });
+
+  const hydrologyPath = testInfo.outputPath("dravakh-hydrology-v1-derived.png");
+  await page.locator("#map").screenshot({ path: hydrologyPath });
+  await testInfo.attach("Dravakh Hydrology v1 — derived rivers", {
+    path: hydrologyPath,
+    contentType: "image/png"
+  });
+
   // Approved physical-baseline milestone: export a real machine .map and prove
   // that the authoring source can be reopened without changing the height grid.
   const milestoneFilename = "dravakh-map-v2-20260909-1141-physical-baseline.map";
