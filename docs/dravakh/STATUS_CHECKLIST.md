@@ -16,18 +16,29 @@
 - [x] deterministic physical baseline generator added;
 - [x] `Dravakh Baseline v1` registered in precreated heightmaps;
 - [x] deterministic source validation added for the baseline PNG;
-- [x] candidate hydrology reconstruction plan added;
-- [x] candidate anchors for all 15 provinces/landmarks added;
-- [x] validation workflow prepared;
+- [x] canonical hydrology plan and runtime validation added;
+- [x] canonical anchors for all 15 provinces/landmarks added;
+- [x] focused Dravakh map validation workflow added;
 - [x] GitHub Actions execution verified;
-- [x] deterministic baseline validation passed in CI;
-- [x] TypeScript + production build passed in CI;
-- [x] lint, unit tests, desktop build and Nix package passed on the validated head;
-- [ ] Playwright suite completed successfully on the validated head;
-- [ ] Pages deployment verified;
-- [ ] baseline visually approved inside Azgaar runtime;
-- [ ] Highhallow runtime separation approved;
-- [ ] Azgaar-derived hydrology approved;
-- [ ] exactly 15 canonical provinces reconstructed and approved;
+- [x] TypeScript / production compile passed on Province Placement v1 head;
+- [x] lint passed on Province Placement v1 head;
+- [x] unit tests passed on Province Placement v1 head;
+- [x] Dravakh validation passed on Province Placement v1 head;
+- [x] GitHub Pages deployment verified on Province Placement v1 head;
+- [x] focused map Playwright gate passed on Province Placement v1 head;
+- [ ] full repository Playwright workflow completed successfully on Province Placement v1 head;
+- [ ] Nix package workflow green on Province Placement v1 head;
+- [x] physical baseline visually approved inside Azgaar runtime;
+- [x] Highhallow runtime separation approved;
+- [x] Azgaar-derived Hydrology v1 approved;
+- [x] exactly 15 canonical provinces reconstructed and technically approved;
+- [x] all valid land assigned to one Dravakh kingdom and one canonical province;
+- [x] Highhallow province remains fully insular;
+- [x] Province Placement v1 `.map` exported and successfully reloaded without territorial recomputation;
+- [x] second durable Province Placement v1 archive stored in Drive;
 - [ ] 15/15 primary landmarks placed and approved;
-- [ ] durable `.map` exported and successfully reloaded;
+- [ ] principal routes created;
+- [ ] PR #1 ready to leave Draft;
+- [ ] PR #1 merged into `master`.
+
+Principal routes remain blocked until the 15/15 primary-landmark gate is complete.
