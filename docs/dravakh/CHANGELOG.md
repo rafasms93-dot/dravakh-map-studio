@@ -1,5 +1,27 @@
 # Dravakh fork changelog
 
+## 2026-09-18 — Province Placement v1 approved
+
+- implemented deterministic territorial reconstruction in `src/dravakh/provinces.ts` using native Azgaar land-cell topology instead of hand-drawn SVG polygons;
+- resolved canonical anchors by province `id`, preventing JSON ordering from misbinding province identities;
+- corrected the territorial priority-queue implementation before approval;
+- normalized the political layer to one Dravakh kingdom with exactly 15 canonical provinces;
+- made water an absolute border barrier while relief, rivers and province-specific terrain preferences influence expansion cost;
+- preserved Highhallow as a fully insular eastern domain;
+- connected the canonical partition to the real Dravakh generation runtime;
+- extended the focused Playwright gate to verify exact canonical identities, full land coverage, anchor assignment, primary-feature continuity and Highhallow exclusivity;
+- generated and visually inspected the province overlay without obvious long tendrils or territorial leakage;
+- exported a real machine `.map` during the gate and detected that reload was recomputing a small number of border cells;
+- fixed `src/dravakh/runtime.ts` so an already-persisted canonical province layer is recognized and preserved 1:1 rather than regenerated;
+- passed focused map-gate run `35374410525`, job `105695597421`;
+- archived map-gate artifact `10559333632`, digest `sha256:71a5515430c421293c365ab4df3d270e0d26bde500283914850115343a0599ce`;
+- machine-exported canonical milestone `dravakh-map-v2-20260918-1422-provinces-v1.map`, size `4,550,644 bytes`;
+- recorded milestone SHA-256 `24daf57e2b8a69102abf0cbd67a1d96a94ee75ccea45ff4fba68651eb803cbe0`;
+- archived a second durable copy under `03 — World & Design Bible / Mapa & Map Studio / Milestones` with Drive file ID `1c4JGZB5cQcXB9nVkNh3TRuRIhW_hOBSo`;
+- preserved the physical-baseline and hydrology milestones separately;
+- advanced the next official gate to placement and validation of all 15 primary landmarks;
+- kept principal routes explicitly deferred.
+
 ## 2026-09-16 — hydrology v1 approved
 
 - audited the river network Azgaar derived from physical baseline v1.1 and identified that the original dominant basin drained west instead of originating in Sanctum Crest and converging through Rivermend;
