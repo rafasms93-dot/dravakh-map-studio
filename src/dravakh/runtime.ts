@@ -1,6 +1,8 @@
 import { DRAVAKH_PROJECT, DRAVAKH_PROVINCES } from "@/data/dravakh-project";
 import { drawBorders } from "@/renderers/draw-borders";
+import { drawMarkers } from "@/renderers/draw-markers";
 import { drawProvinces } from "@/renderers/draw-provinces";
+import { applyDravakhLandmarks } from "./landmarks";
 import { applyDravakhProvinces } from "./provinces";
 
 type SaveMethod = "storage" | "machine" | "dropbox";
@@ -15,6 +17,9 @@ type StudioWindow = Window & {
   };
   DravakhProvinces?: {
     apply: typeof applyDravakhProvinces;
+  };
+  DravakhLandmarks?: {
+    apply: typeof applyDravakhLandmarks;
   };
 };
 
@@ -138,6 +143,7 @@ function applyCanonicalProvinceLayer(): void {
         }
       })
     );
+    applyCanonicalLandmarkLayer();
     return;
   }
 
@@ -145,6 +151,16 @@ function applyCanonicalProvinceLayer(): void {
   drawProvinces();
   drawBorders();
   window.dispatchEvent(new CustomEvent("dravakh:provinces-applied", { detail: summary }));
+  applyCanonicalLandmarkLayer();
+}
+
+function applyCanonicalLandmarkLayer(): void {
+  const template = document.getElementById("templateInput") as HTMLInputElement | null;
+  if (template?.value !== "dravakh") return;
+
+  const summary = applyDravakhLandmarks();
+  drawMarkers();
+  window.dispatchEvent(new CustomEvent("dravakh:landmarks-applied", { detail: summary }));
 }
 
 function installRuntime(): void {
@@ -154,6 +170,7 @@ function installRuntime(): void {
   const { panel, status, backupButton } = createStudioPanel();
   document.body.append(panel);
   (window as StudioWindow).DravakhProvinces = { apply: applyDravakhProvinces };
+  (window as StudioWindow).DravakhLandmarks = { apply: applyDravakhLandmarks };
   window.addEventListener("map:generated", applyCanonicalProvinceLayer);
 
   const renderStatus = (): void => {
