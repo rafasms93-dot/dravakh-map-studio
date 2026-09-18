@@ -48,8 +48,7 @@ const normalizedDistance = (cell: number, x: number, y: number): number => {
   return Math.hypot(px - x, py - y);
 };
 
-const isCoastal = (cell: number): boolean =>
-  pack.cells.c[cell].some(neighbor => pack.cells.h[neighbor] < 20);
+const isCoastal = (cell: number): boolean => pack.cells.c[cell].some(neighbor => pack.cells.h[neighbor] < 20);
 
 function terrainPenalty(cell: number, terrain: LandmarkProfile["terrain"]): number {
   const height = pack.cells.h[cell];
@@ -83,10 +82,10 @@ function selectLandmarkCell(provinceId: number, id: string, x: number, y: number
 }
 
 function removeExistingLandmarks(): void {
-  const existing = [...(pack.markers ?? [])].filter(marker =>
-    marker.type.startsWith(DRAVAKH_LANDMARK_TYPE_PREFIX)
-  );
-  existing.forEach(marker => Markers.deleteMarker(marker.i));
+  const existing = [...(pack.markers ?? [])].filter(marker => marker.type.startsWith(DRAVAKH_LANDMARK_TYPE_PREFIX));
+  existing.forEach(marker => {
+    Markers.deleteMarker(marker.i);
+  });
 }
 
 function setLandmarkNote(markerId: number, provinceIndex: number): void {
@@ -106,9 +105,7 @@ function canonicalMarkerForProvince(provinceIndex: number): Marker | undefined {
 }
 
 export function hasPersistedCanonicalLandmarks(): boolean {
-  const landmarks = (pack.markers ?? []).filter(marker =>
-    marker.type.startsWith(DRAVAKH_LANDMARK_TYPE_PREFIX)
-  );
+  const landmarks = (pack.markers ?? []).filter(marker => marker.type.startsWith(DRAVAKH_LANDMARK_TYPE_PREFIX));
   if (landmarks.length !== DRAVAKH_PROVINCES.length) return false;
 
   return DRAVAKH_PROVINCES.every((definition, index) => {
