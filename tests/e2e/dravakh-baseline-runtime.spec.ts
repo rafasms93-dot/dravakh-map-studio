@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import { DRAVAKH_PROJECT, DRAVAKH_PROVINCES } from "../../src/data/dravakh-project";
+import provincePlan from "../../maps/dravakh-province-anchors-v1.json";
 
 const selectPreset = (page: Page, name: string) =>
   page.evaluate(name => {
@@ -38,7 +40,7 @@ const distance = (a: NormalizedPoint, b: NormalizedPoint) => Math.hypot(a[0] - b
 const pathDistance = (river: HydrologyRiver, point: NormalizedPoint) =>
   Math.min(...river.path.map(candidate => distance(candidate, point)));
 
-test("Dravakh canonical map derives hydrology and survives a durable .map reload", async ({ page }, testInfo) => {
+test("Dravakh canonical map derives hydrology, applies 15 canonical provinces and survives a durable .map reload", async ({ page }, testInfo) => {
   test.setTimeout(180000);
 
   // Match the canonical Dravakh baseline aspect ratio (768 × 1152) so the
@@ -195,10 +197,143 @@ test("Dravakh canonical map derives hydrology and survives a durable .map reload
     contentType: "image/png"
   });
 
-  // Hydrology milestone: export a real machine .map and prove that both terrain
-  // and the derived river topology survive a full reload from the authoring file.
-  const milestoneFilename = "dravakh-map-v2-20260916-1635-hydrology-v1.map";
-  const canonicalMapName = "Dravakh Hydrology v1";
+  const canonicalProvinceSpec = DRAVAKH_PROVINCES.map(definition => {
+    const anchor = provincePlan.provinces.find(candidate => candidate.id === definition.id);
+    if (!anchor) throw new Error(`Missing canonical test anchor for ${definition.id}`);
+    return { id: definition.id, name: definition.name, x: anchor.x, y: anchor.y };
+  });
+
+  const territory = await page.evaluate(spec => {
+    const world = window as any;
+    const { pack, graphWidth, graphHeight } = world;
+    const { cells, provinces, states } = pack;
+    const landCells = Array.from(cells.i as ArrayLike<number>).filter((cell: number) => cells.h[cell] >= 20);
+    const activeStates = states.filter((state: any) => state.i && !state.removed);
+    const activeProvinces = provinces.filter((province: any) => province.i && !province.removed);
+
+    const provinceCellCounts = activeProvinces.map((province: any) => ({
+      i: province.i,
+      name: province.name,
+      cells: landCells.filter((cell: number) => cells.province[cell] === province.i).length
+    }));
+
+    const centers = activeProvinces.map((province: any) => {
+      const point = cells.p[province.center] as [number, number];
+      return {
+        i: province.i,
+        name: province.name,
+        cell: province.center,
+        x: point[0] / graphWidth,
+        y: point[1] / graphHeight,
+        assignedProvince: cells.province[province.center]
+      };
+    });
+
+    const connectivity = activeProvinces.map((province: any) => {
+      const primaryFeature = cells.f[province.center];
+      const targetCells = landCells.filter(
+        (cell: number) => cells.province[cell] === province.i && cells.f[cell] === primaryFeature
+      );
+      const target = new Set(targetCells);
+      const visited = new Set<number>();
+      const queue = [province.center];
+
+      while (queue.length) {
+        const cell = queue.pop()!;
+        if (visited.has(cell) || !target.has(cell)) continue;
+        visited.add(cell);
+        for (const neighbor of cells.c[cell]) {
+          if (!visited.has(neighbor) && target.has(neighbor)) queue.push(neighbor);
+        }
+      }
+
+      return {
+        i: province.i,
+        name: province.name,
+        primaryFeature,
+        primaryFeatureCells: targetCells.length,
+        reachableCells: visited.size
+      };
+    });
+
+    const highhallow = activeProvinces.find((province: any) => province.name === "Highhallow");
+    if (!highhallow) throw new Error("Highhallow province was not generated");
+    const highhallowFeature = cells.f[highhallow.center];
+    const highhallowMainIslandIntruders = landCells.filter(
+      (cell: number) => cells.f[cell] === highhallowFeature && cells.province[cell] !== highhallow.i
+    ).length;
+    const highhallowWestCells = landCells.filter((cell: number) => {
+      if (cells.province[cell] !== highhallow.i) return false;
+      const point = cells.p[cell] as [number, number];
+      return point[0] / graphWidth < 0.78;
+    }).length;
+
+    return {
+      activeStateCount: activeStates.length,
+      stateName: activeStates[0]?.name ?? null,
+      stateProvinceIds: Array.from(activeStates[0]?.provinces ?? []),
+      activeProvinceCount: activeProvinces.length,
+      provinceNames: activeProvinces.map((province: any) => province.name),
+      provinceStates: activeProvinces.map((province: any) => province.state),
+      landCellCount: landCells.length,
+      unassignedLandCells: landCells.filter(
+        (cell: number) => cells.province[cell] < 1 || cells.province[cell] > spec.length
+      ).length,
+      wrongStateLandCells: landCells.filter((cell: number) => cells.state[cell] !== 1).length,
+      provinceCellCounts,
+      centers,
+      connectivity,
+      highhallowFeature,
+      highhallowMainIslandIntruders,
+      highhallowWestCells
+    };
+  }, canonicalProvinceSpec);
+
+  expect(territory.activeStateCount).toBe(1);
+  expect(territory.stateName).toBe(DRAVAKH_PROJECT.defaultKingdomName);
+  expect(territory.stateProvinceIds).toEqual(DRAVAKH_PROVINCES.map((_, index) => index + 1));
+  expect(territory.activeProvinceCount).toBe(15);
+  expect(territory.provinceNames).toEqual(DRAVAKH_PROVINCES.map(province => province.name));
+  expect(territory.provinceStates).toEqual(DRAVAKH_PROVINCES.map(() => 1));
+  expect(territory.landCellCount).toBeGreaterThan(0);
+  expect(territory.unassignedLandCells).toBe(0);
+  expect(territory.wrongStateLandCells).toBe(0);
+  expect(territory.provinceCellCounts.every(province => province.cells > 0)).toBe(true);
+  expect(territory.connectivity.every(province => province.reachableCells === province.primaryFeatureCells)).toBe(true);
+
+  territory.centers.forEach((center, index) => {
+    const anchor = canonicalProvinceSpec[index];
+    expect(center.name).toBe(anchor.name);
+    expect(center.assignedProvince).toBe(index + 1);
+    expect(Math.hypot(center.x - anchor.x, center.y - anchor.y)).toBeLessThan(0.08);
+  });
+
+  expect(territory.highhallowMainIslandIntruders).toBe(0);
+  expect(territory.highhallowWestCells).toBe(0);
+
+  await testInfo.attach("Dravakh Provinces v1 — territorial gate", {
+    body: Buffer.from(JSON.stringify({ canonicalProvinceSpec, territory }, null, 2)),
+    contentType: "application/json"
+  });
+
+  await page.evaluate(() => {
+    const provinces = document.getElementById("provs") as SVGGElement | null;
+    const borders = document.getElementById("borders") as SVGGElement | null;
+    if (provinces) provinces.style.display = "block";
+    if (borders) borders.style.display = "block";
+  });
+  await page.waitForTimeout(600);
+  const provincesPath = testInfo.outputPath("dravakh-provinces-v1-territorial-gate.png");
+  await page.locator("#map").screenshot({ path: provincesPath });
+  await testInfo.attach("Dravakh Provinces v1 — territorial gate", {
+    path: provincesPath,
+    contentType: "image/png"
+  });
+
+  // Province milestone: export a real machine .map and prove that terrain,
+  // hydrology and the complete territorial model survive a full authoring reload.
+  const milestoneFilename = "dravakh-map-v2-20260918-1422-provinces-v1.map";
+  const canonicalMapName = "Dravakh Provinces v1";
 
   await page.evaluate(name => {
     const input = document.getElementById("mapName") as HTMLInputElement;
@@ -212,6 +347,42 @@ test("Dravakh canonical map derives hydrology and survives a durable .map reload
     graphWidth: (window as any).graphWidth as number,
     graphHeight: (window as any).graphHeight as number,
     heights: Array.from((window as any).grid.cells.h as ArrayLike<number>),
+    cellsProvince: Array.from((window as any).pack.cells.province as ArrayLike<number>),
+    cellsState: Array.from((window as any).pack.cells.state as ArrayLike<number>),
+    states: ((window as any).pack.states as any[]).map(state =>
+      state?.i
+        ? {
+            i: state.i,
+            name: state.name,
+            fullName: state.fullName,
+            form: state.form,
+            formName: state.formName,
+            center: state.center,
+            capital: state.capital,
+            culture: state.culture,
+            color: state.color,
+            provinces: Array.from(state.provinces ?? []),
+            lock: state.lock,
+            removed: state.removed ?? false
+          }
+        : { i: 0, name: state?.name ?? "Neutrals" }
+    ),
+    provinces: ((window as any).pack.provinces as any[]).map(province =>
+      province?.i
+        ? {
+            i: province.i,
+            state: province.state,
+            lock: province.lock,
+            center: province.center,
+            burg: province.burg,
+            name: province.name,
+            formName: province.formName,
+            fullName: province.fullName,
+            color: province.color,
+            pole: province.pole
+          }
+        : { i: 0 }
+    ),
     rivers: ((window as any).pack.rivers as any[]).map(river => ({
       i: river.i,
       source: river.source,
@@ -235,9 +406,9 @@ test("Dravakh canonical map derives hydrology and survives a durable .map reload
   await download.saveAs(milestonePath);
   const mapData = await readFile(milestonePath, "utf8");
   expect(mapData.length).toBeGreaterThan(10000);
-  expect(mapData).toContain("|Dravakh Hydrology v1|");
+  expect(mapData).toContain("|Dravakh Provinces v1|");
 
-  await testInfo.attach("Dravakh Hydrology v1 — durable .map", {
+  await testInfo.attach("Dravakh Provinces v1 — durable .map", {
     path: milestonePath,
     contentType: "text/plain"
   });
@@ -245,9 +416,9 @@ test("Dravakh canonical map derives hydrology and survives a durable .map reload
   // Deliberately alter a persisted field so the following state can only pass
   // after the downloaded .map has genuinely been parsed and restored.
   await page.evaluate(() => {
-    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-HYDROLOGY-RELOAD-SENTINEL";
+    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-PROVINCES-RELOAD-SENTINEL";
   });
-  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-HYDROLOGY-RELOAD-SENTINEL");
+  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-PROVINCES-RELOAD-SENTINEL");
 
   await page.evaluate(async serializedMap => {
     const blob = new Blob([serializedMap], { type: "text/plain" });
@@ -267,6 +438,42 @@ test("Dravakh canonical map derives hydrology and survives a durable .map reload
     graphWidth: (window as any).graphWidth as number,
     graphHeight: (window as any).graphHeight as number,
     heights: Array.from((window as any).grid.cells.h as ArrayLike<number>),
+    cellsProvince: Array.from((window as any).pack.cells.province as ArrayLike<number>),
+    cellsState: Array.from((window as any).pack.cells.state as ArrayLike<number>),
+    states: ((window as any).pack.states as any[]).map(state =>
+      state?.i
+        ? {
+            i: state.i,
+            name: state.name,
+            fullName: state.fullName,
+            form: state.form,
+            formName: state.formName,
+            center: state.center,
+            capital: state.capital,
+            culture: state.culture,
+            color: state.color,
+            provinces: Array.from(state.provinces ?? []),
+            lock: state.lock,
+            removed: state.removed ?? false
+          }
+        : { i: 0, name: state?.name ?? "Neutrals" }
+    ),
+    provinces: ((window as any).pack.provinces as any[]).map(province =>
+      province?.i
+        ? {
+            i: province.i,
+            state: province.state,
+            lock: province.lock,
+            center: province.center,
+            burg: province.burg,
+            name: province.name,
+            formName: province.formName,
+            fullName: province.fullName,
+            color: province.color,
+            pole: province.pole
+          }
+        : { i: 0 }
+    ),
     rivers: ((window as any).pack.rivers as any[]).map(river => ({
       i: river.i,
       source: river.source,
@@ -285,9 +492,9 @@ test("Dravakh canonical map derives hydrology and survives a durable .map reload
   await selectPreset(page, "physical");
   await page.waitForTimeout(800);
   await dismissUpdateDialog(page);
-  const reloadedPhysicalPath = testInfo.outputPath("dravakh-hydrology-v1-physical-after-reload.png");
+  const reloadedPhysicalPath = testInfo.outputPath("dravakh-provinces-v1-physical-after-reload.png");
   await page.locator("#map").screenshot({ path: reloadedPhysicalPath });
-  await testInfo.attach("Dravakh Hydrology v1 — physical after .map reload", {
+  await testInfo.attach("Dravakh Provinces v1 — physical after .map reload", {
     path: reloadedPhysicalPath,
     contentType: "image/png"
   });
