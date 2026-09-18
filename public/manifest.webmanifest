@@ -1,13 +1,13 @@
 {
-  "background_color": "#fff",
+  "background_color": "#0d0b0a",
   "display": "standalone",
   "orientation": "any",
-  "name": "Azgaar's Fantasy Map Generator",
-  "short_name": "Azgaar's Fantasy Map Generator",
-  "description": "Web application generating interactive and highly customizable maps",
-  "scope": "/Fantasy-Map-Generator/",
-  "start_url": "/Fantasy-Map-Generator/?source=pwa",
-  "url": "https://azgaar.github.io/Fantasy-Map-Generator",
+  "name": "Dravakh Map Studio",
+  "short_name": "Dravakh Map Studio",
+  "description": "Project-controlled cartography studio for Dravakh: House of Habits, derived from Azgaar's Fantasy Map Generator.",
+  "scope": "/dravakh-map-studio/",
+  "start_url": "/dravakh-map-studio/?source=pwa",
+  "url": "https://rafasms93-dot.github.io/dravakh-map-studio/",
   "icons": [
     {
       "src": "images/icons/icon_x512.png",

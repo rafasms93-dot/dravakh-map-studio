@@ -1,0 +1,58 @@
+name: Validate Dravakh Map Gate
+
+on:
+  push:
+    branches: [dravakh-studio-v1]
+    paths:
+      - "scripts/generate-dravakh-heightmap.mjs"
+      - "scripts/validate-dravakh-baseline.mjs"
+      - "public/heightmaps/dravakh.png"
+      - "maps/dravakh-*.json"
+      - "src/dravakh/**"
+      - "src/data/precreated-heightmaps.ts"
+      - "tests/e2e/dravakh-baseline-runtime.spec.ts"
+      - ".github/workflows/validate-dravakh-map-gate.yml"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  map-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build current Dravakh map
+        run: npm run build
+
+      - name: Run focused map runtime gate
+        run: npx playwright test tests/e2e/dravakh-baseline-runtime.spec.ts --project=chromium
+        env:
+          SKIP_BUILD: "1"
+
+      - name: Upload map gate report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: dravakh-map-gate-report
+          path: playwright-report/
+          retention-days: 30
