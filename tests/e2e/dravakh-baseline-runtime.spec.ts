@@ -313,7 +313,7 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
 
   const landmarks = await page.evaluate(spec => {
     const world = window as any;
-    const { pack, graphWidth, graphHeight, notes } = world;
+    const { pack, graphWidth, graphHeight } = world;
     return (pack.markers as any[])
       .filter(marker => marker.type.startsWith("dravakh-landmark-"))
       .map(marker => {
@@ -459,7 +459,7 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
     landmarks: ((window as any).pack.markers as any[])
       .filter(marker => marker.type.startsWith("dravakh-landmark-"))
       .map(marker => {
-        const note = ((window as any).notes as any[]).find(candidate => candidate.id === `marker${marker.i}`);
+        const note = notes.find(candidate => candidate.id === `marker${marker.i}`);
         return {
           i: marker.i,
           type: marker.type,
@@ -574,7 +574,7 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
     landmarks: ((window as any).pack.markers as any[])
       .filter(marker => marker.type.startsWith("dravakh-landmark-"))
       .map(marker => {
-        const note = ((window as any).notes as any[]).find(candidate => candidate.id === `marker${marker.i}`);
+        const note = notes.find(candidate => candidate.id === `marker${marker.i}`);
         return {
           i: marker.i,
           type: marker.type,
