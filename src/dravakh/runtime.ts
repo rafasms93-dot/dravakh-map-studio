@@ -159,6 +159,7 @@ function applyCanonicalLandmarkLayer(): void {
   if (template?.value !== "dravakh") return;
 
   const summary = applyDravakhLandmarks();
+  document.getElementById("markers")?.setAttribute("pinned", "1");
   drawMarkers();
   window.dispatchEvent(new CustomEvent("dravakh:landmarks-applied", { detail: summary }));
 }
