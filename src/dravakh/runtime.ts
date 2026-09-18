@@ -1,3 +1,4 @@
+import { DRAVAKH_PROJECT, DRAVAKH_PROVINCES } from "@/data/dravakh-project";
 import { drawBorders } from "@/renderers/draw-borders";
 import { drawProvinces } from "@/renderers/draw-provinces";
 import { applyDravakhProvinces } from "./provinces";
@@ -99,9 +100,46 @@ function createStudioPanel(): { panel: HTMLDivElement; status: HTMLSpanElement; 
   return { panel, status, backupButton };
 }
 
+function hasPersistedCanonicalProvinceLayer(): boolean {
+  if (pack.states[1]?.name !== DRAVAKH_PROJECT.defaultKingdomName) return false;
+
+  const provinces = pack.provinces.filter(province => province.i && !province.removed);
+  if (provinces.length !== DRAVAKH_PROVINCES.length) return false;
+  if (
+    !DRAVAKH_PROVINCES.every(
+      (definition, index) => provinces[index]?.i === index + 1 && provinces[index]?.name === definition.name
+    )
+  )
+    return false;
+
+  for (const cell of pack.cells.i) {
+    if (pack.cells.h[cell] < 20) continue;
+    const province = pack.cells.province[cell];
+    if (pack.cells.state[cell] !== 1 || province < 1 || province > DRAVAKH_PROVINCES.length) return false;
+  }
+
+  return true;
+}
+
 function applyCanonicalProvinceLayer(): void {
   const template = document.getElementById("templateInput") as HTMLInputElement | null;
   if (template?.value !== "dravakh") return;
+
+  if (hasPersistedCanonicalProvinceLayer()) {
+    drawProvinces();
+    drawBorders();
+    window.dispatchEvent(
+      new CustomEvent("dravakh:provinces-applied", {
+        detail: {
+          kingdom: DRAVAKH_PROJECT.defaultKingdomName,
+          provinceCount: DRAVAKH_PROVINCES.length,
+          provinceNames: DRAVAKH_PROVINCES.map(province => province.name),
+          restored: true
+        }
+      })
+    );
+    return;
+  }
 
   const summary = applyDravakhProvinces();
   drawProvinces();
