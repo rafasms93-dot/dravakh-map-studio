@@ -35,13 +35,13 @@ Azgaar remains the cartographic engine and upstream source. Dravakh Map Studio a
 - Ironbank Ridge as the old rocky massif in the extreme southwest.
 - Highfest Haven on the protected southeastern coast/bay.
 
-The v1.1 refinement replaced overly concentric relief domes with asymmetric ridge chains without changing the approved coastline or land/water mask.
-
 Canonical physical milestone:
 
 `dravakh-map-v2-20260909-1141-physical-baseline.map`
 
-SHA-256: `b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814`
+SHA-256:
+
+`b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814`
 
 The machine-exported milestone was reopened successfully and reproduced the saved seed, `768 × 1152` graph dimensions and full height grid exactly.
 
@@ -64,21 +64,21 @@ Canonical hydrology behavior:
 - Highhallow retains only short, locally scaled island streams;
 - river geometry does not override ridges or the approved coastline.
 
-Approval-run evidence showed a dominant root-system discharge of `12705` against `3721` for the second-largest root system. Runtime-generated river names are diagnostic only and are **not canonical lore**.
-
 Canonical hydrology milestone:
 
 `dravakh-map-v2-20260916-1635-hydrology-v1.map`
 
-SHA-256: `160afd20c8ad13abae1c15acf90dfc541fdac2935a9a1451a17bb94f12aec71e`
+SHA-256:
+
+`160afd20c8ad13abae1c15acf90dfc541fdac2935a9a1451a17bb94f12aec71e`
 
 The milestone was reopened successfully and reproduced the map name, seed, graph dimensions, full height grid and serialized river topology exactly.
 
-The physical-baseline milestone remains preserved separately and must not be overwritten by later milestones.
+## Approved province baseline
 
-## Canonical provinces
+**Province Placement v1 is canonical as of 2026-09-18.**
 
-Exactly 15 provinces must exist:
+Exactly 15 provinces exist inside one Dravakh kingdom:
 
 1. Rivermend — House Rhyven — Hidratação
 2. Harvest Hall — House Goldmere — Nutrição
@@ -96,23 +96,49 @@ Exactly 15 provinces must exist:
 14. Highfest Haven — House Merraval — Lazer
 15. Ironbank Ridge — House Ferrane — Finanças
 
-Province names, houses and category bindings are canonical. Current province boundaries have not yet been reconstructed on the new persistent baseline.
+Province names, houses and category bindings are canonical.
 
-## Lost Work-session state
+The territorial implementation uses native Azgaar land-cell topology with deterministic multi-source expansion. Water remains a hard barrier while relief, rivers and province-specific terrain preferences influence border cost. Highhallow remains fully insular.
 
-A prior Azgaar session in ChatGPT Work reached this state before the browser session was lost:
+The province gate verified:
 
-- physical base approved;
-- Highhallow corrected to be fully insular;
-- one kingdom renamed to Dravakh;
-- exactly 15 canonical provinces created and nominally verified;
-- 13 of 15 provincial centers created;
-- pending centers:
-  - Highfest Haven → Porto de Merraval;
-  - Swiftstride Pass → fortim/passagem;
-- no principal route network had been created yet.
+- exactly one active state named Dravakh;
+- exactly 15 canonical province identities and no extras;
+- all valid land cells assigned to one of the 15 provinces;
+- all valid land cells assigned to Dravakh;
+- all 15 anchors resolved to the expected province cores;
+- primary-feature territorial continuity;
+- Highhallow main-island exclusivity;
+- exact territorial persistence across machine `.map` save/reload.
 
-That browser-local `.map` state is considered **lost unless independently recovered**. It must not be treated as a durable project artifact and does not override the current canonical physical or hydrology milestones.
+A reload defect discovered by the gate was corrected: canonical province data already stored in a `.map` is now preserved instead of being recalculated.
+
+Canonical province milestone:
+
+`dravakh-map-v2-20260918-1422-provinces-v1.map`
+
+Size: `4,550,644 bytes`
+
+SHA-256:
+
+`24daf57e2b8a69102abf0cbd67a1d96a94ee75ccea45ff4fba68651eb803cbe0`
+
+Focused map gate:
+
+- run `35374410525`
+- job `105695597421`
+- artifact `10559333632`
+- result **success**
+
+A second durable archive exists in the project Drive Milestones folder with ID:
+
+`1c4JGZB5cQcXB9nVkNh3TRuRIhW_hOBSo`
+
+Physical and hydrology milestones remain preserved separately and must not be overwritten.
+
+## Historical lost Work-session state
+
+A prior Azgaar session in ChatGPT Work created a browser-local reconstruction that was lost before durable export. It remains historical context only and does not override the current canonical physical, hydrology or province milestones.
 
 ## Current reconstruction policy
 
@@ -131,8 +157,8 @@ The dedicated `Validate Dravakh Map Gate` workflow is the focused runtime gate f
 
 ## Next technical milestone
 
-**Reconstruct and approve exactly 15 canonical province geometries on top of the canonical physical and hydrology baselines.**
+**Place and approve all 15 canonical primary landmarks on top of Province Placement v1.**
 
-Province anchors are guidance, not rigid polygon geometry. Borders should follow believable geography and the approved world structure.
+Landmarks must remain physically plausible and belong to their approved provinces.
 
-Do not place the full landmark layer before the 15-province geometry gate is complete. Do not start principal routes until the physical baseline, hydrology, 15 province assignment and 15/15 main landmarks are verified.
+Do not create principal routes until the physical baseline, hydrology, 15 provinces and 15/15 main landmarks are all verified.
