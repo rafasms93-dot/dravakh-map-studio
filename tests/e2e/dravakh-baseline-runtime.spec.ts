@@ -40,7 +40,7 @@ const distance = (a: NormalizedPoint, b: NormalizedPoint) => Math.hypot(a[0] - b
 const pathDistance = (river: HydrologyRiver, point: NormalizedPoint) =>
   Math.min(...river.path.map(candidate => distance(candidate, point)));
 
-test("Dravakh canonical map derives hydrology, applies 15 canonical provinces and survives a durable .map reload", async ({ page }, testInfo) => {
+test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landmarks, and survives a durable .map reload", async ({ page }, testInfo) => {
   test.setTimeout(180000);
 
   // Match the canonical Dravakh baseline aspect ratio (768 × 1152) so the
@@ -200,7 +200,7 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
   const canonicalProvinceSpec = DRAVAKH_PROVINCES.map(definition => {
     const anchor = provincePlan.provinces.find(candidate => candidate.id === definition.id);
     if (!anchor) throw new Error(`Missing canonical test anchor for ${definition.id}`);
-    return { id: definition.id, name: definition.name, x: anchor.x, y: anchor.y };
+    return { id: definition.id, name: definition.name, landmark: definition.primaryLandmark, x: anchor.x, y: anchor.y };
   });
 
   const territory = await page.evaluate(spec => {
@@ -311,6 +311,79 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
   expect(territory.highhallowMainIslandIntruders).toBe(0);
   expect(territory.highhallowWestCells).toBe(0);
 
+  const landmarks = await page.evaluate(spec => {
+    const world = window as any;
+    const { pack, graphWidth, graphHeight, notes } = world;
+    return (pack.markers as any[])
+      .filter(marker => marker.type.startsWith("dravakh-landmark-"))
+      .map(marker => {
+        const note = (notes as any[]).find(candidate => candidate.id === `marker${marker.i}`);
+        const [x, y] = pack.cells.p[marker.cell] as [number, number];
+        return {
+          i: marker.i,
+          type: marker.type,
+          noteName: note?.name ?? null,
+          cell: marker.cell,
+          province: pack.cells.province[marker.cell],
+          state: pack.cells.state[marker.cell],
+          height: pack.cells.h[marker.cell],
+          river: pack.cells.r[marker.cell] || 0,
+          feature: pack.cells.f[marker.cell],
+          coastal: pack.cells.c[marker.cell].some((neighbor: number) => pack.cells.h[neighbor] < 20),
+          x: x / graphWidth,
+          y: y / graphHeight,
+          lock: marker.lock === true,
+          pinned: marker.pinned === true,
+          known: spec.some(candidate => `dravakh-landmark-${candidate.id}` === marker.type)
+        };
+      });
+  }, canonicalProvinceSpec);
+
+  expect(landmarks).toHaveLength(15);
+  canonicalProvinceSpec.forEach((definition, index) => {
+    const marker = landmarks.find(candidate => candidate.type === `dravakh-landmark-${definition.id}`);
+    expect(marker).toBeDefined();
+    expect(marker!.known).toBe(true);
+    expect(marker!.noteName).toBe(definition.landmark);
+    expect(marker!.province).toBe(index + 1);
+    expect(marker!.state).toBe(1);
+    expect(marker!.height).toBeGreaterThanOrEqual(20);
+    expect(marker!.lock).toBe(true);
+    expect(marker!.pinned).toBe(true);
+    expect(Math.hypot(marker!.x - definition.x, marker!.y - definition.y)).toBeLessThan(0.13);
+  });
+
+  for (const id of ["white-keep", "citadel-reach", "highfest-haven"]) {
+    expect(landmarks.find(marker => marker.type === `dravakh-landmark-${id}`)?.coastal).toBe(true);
+  }
+  for (const id of ["rivermend", "harvest-hall"]) {
+    expect(landmarks.find(marker => marker.type === `dravakh-landmark-${id}`)?.river).toBeGreaterThan(0);
+  }
+  for (const id of ["sanctum-crest", "ironforge-reaches", "ironbank-ridge", "alliance-high", "highhallow"]) {
+    expect(landmarks.find(marker => marker.type === `dravakh-landmark-${id}`)?.height).toBeGreaterThanOrEqual(38);
+  }
+
+  const highhallowLandmark = landmarks.find(marker => marker.type === "dravakh-landmark-highhallow");
+  expect(highhallowLandmark?.x).toBeGreaterThan(0.795);
+  expect(highhallowLandmark?.feature).toBe(territory.highhallowFeature);
+
+  await testInfo.attach("Dravakh Landmarks v1 — canonical placement", {
+    body: Buffer.from(JSON.stringify({ canonicalProvinceSpec, landmarks }, null, 2)),
+    contentType: "application/json"
+  });
+
+  await page.evaluate(() => {
+    const markers = document.getElementById("markers") as SVGGElement | null;
+    if (markers) markers.style.display = "block";
+  });
+  await page.waitForTimeout(400);
+  const landmarksPath = testInfo.outputPath("dravakh-landmarks-v1-canonical-placement.png");
+  await page.locator("#map").screenshot({ path: landmarksPath });
+  await testInfo.attach("Dravakh Landmarks v1 — canonical placement", {
+    path: landmarksPath,
+    contentType: "image/png"
+  });
+
   await testInfo.attach("Dravakh Provinces v1 — territorial gate", {
     body: Buffer.from(JSON.stringify({ canonicalProvinceSpec, territory }, null, 2)),
     contentType: "application/json"
@@ -330,10 +403,10 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
     contentType: "image/png"
   });
 
-  // Province milestone: export a real machine .map and prove that terrain,
-  // hydrology and the complete territorial model survive a full authoring reload.
-  const milestoneFilename = "dravakh-map-v2-20260918-1422-provinces-v1.map";
-  const canonicalMapName = "Dravakh Provinces v1";
+  // Landmark milestone: export a real machine .map and prove that terrain,
+  // hydrology, territories and all 15 canonical landmarks survive a full authoring reload.
+  const milestoneFilename = "dravakh-map-v2-20260918-landmarks-v1.map";
+  const canonicalMapName = "Dravakh Landmarks v1";
 
   await page.evaluate(name => {
     const input = document.getElementById("mapName") as HTMLInputElement;
@@ -383,6 +456,30 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
           }
         : { i: 0 }
     ),
+    landmarks: ((window as any).pack.markers as any[])
+      .filter(marker => marker.type.startsWith("dravakh-landmark-"))
+      .map(marker => {
+        const note = ((window as any).notes as any[]).find(candidate => candidate.id === `marker${marker.i}`);
+        return {
+          i: marker.i,
+          type: marker.type,
+          icon: marker.icon,
+          x: marker.x,
+          y: marker.y,
+          dx: marker.dx,
+          dy: marker.dy,
+          px: marker.px,
+          size: marker.size,
+          pin: marker.pin,
+          fill: marker.fill,
+          stroke: marker.stroke,
+          cell: marker.cell,
+          lock: marker.lock,
+          pinned: marker.pinned,
+          noteName: note?.name ?? null,
+          noteLegend: note?.legend ?? null
+        };
+      }),
     rivers: ((window as any).pack.rivers as any[]).map(river => ({
       i: river.i,
       source: river.source,
@@ -406,9 +503,9 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
   await download.saveAs(milestonePath);
   const mapData = await readFile(milestonePath, "utf8");
   expect(mapData.length).toBeGreaterThan(10000);
-  expect(mapData).toContain("|Dravakh Provinces v1|");
+  expect(mapData).toContain("|Dravakh Landmarks v1|");
 
-  await testInfo.attach("Dravakh Provinces v1 — durable .map", {
+  await testInfo.attach("Dravakh Landmarks v1 — durable .map", {
     path: milestonePath,
     contentType: "text/plain"
   });
@@ -416,9 +513,9 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
   // Deliberately alter a persisted field so the following state can only pass
   // after the downloaded .map has genuinely been parsed and restored.
   await page.evaluate(() => {
-    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-PROVINCES-RELOAD-SENTINEL";
+    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-LANDMARKS-RELOAD-SENTINEL";
   });
-  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-PROVINCES-RELOAD-SENTINEL");
+  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-LANDMARKS-RELOAD-SENTINEL");
 
   await page.evaluate(async serializedMap => {
     const blob = new Blob([serializedMap], { type: "text/plain" });
@@ -474,6 +571,30 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
           }
         : { i: 0 }
     ),
+    landmarks: ((window as any).pack.markers as any[])
+      .filter(marker => marker.type.startsWith("dravakh-landmark-"))
+      .map(marker => {
+        const note = ((window as any).notes as any[]).find(candidate => candidate.id === `marker${marker.i}`);
+        return {
+          i: marker.i,
+          type: marker.type,
+          icon: marker.icon,
+          x: marker.x,
+          y: marker.y,
+          dx: marker.dx,
+          dy: marker.dy,
+          px: marker.px,
+          size: marker.size,
+          pin: marker.pin,
+          fill: marker.fill,
+          stroke: marker.stroke,
+          cell: marker.cell,
+          lock: marker.lock,
+          pinned: marker.pinned,
+          noteName: note?.name ?? null,
+          noteLegend: note?.legend ?? null
+        };
+      }),
     rivers: ((window as any).pack.rivers as any[]).map(river => ({
       i: river.i,
       source: river.source,
@@ -492,9 +613,9 @@ test("Dravakh canonical map derives hydrology, applies 15 canonical provinces an
   await selectPreset(page, "physical");
   await page.waitForTimeout(800);
   await dismissUpdateDialog(page);
-  const reloadedPhysicalPath = testInfo.outputPath("dravakh-provinces-v1-physical-after-reload.png");
+  const reloadedPhysicalPath = testInfo.outputPath("dravakh-landmarks-v1-physical-after-reload.png");
   await page.locator("#map").screenshot({ path: reloadedPhysicalPath });
-  await testInfo.attach("Dravakh Provinces v1 — physical after .map reload", {
+  await testInfo.attach("Dravakh Landmarks v1 — physical after .map reload", {
     path: reloadedPhysicalPath,
     contentType: "image/png"
   });
