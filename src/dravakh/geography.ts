@@ -192,15 +192,8 @@ function getSummary(changedCells: number, restored: boolean) {
 function hasPersistedCanonicalGeography(): boolean {
   const metadata = notes.find(note => note.id === GEOGRAPHY_NOTE_ID);
   if (metadata?.name !== "Dravakh Geographic Detail v1") return false;
+  if (pack.cells.biome.length !== pack.cells.i.length) return false;
   if (!pack.relief?.length) return false;
-
-  for (const cell of pack.cells.i) {
-    if (pack.cells.h[cell] < 20) continue;
-    const provinceIndex = pack.cells.province[cell];
-    if (!PROVINCE_ID_BY_INDEX.has(provinceIndex)) return false;
-    if (pack.cells.biome[cell] === BIOME.marine) return false;
-  }
-
   return true;
 }
 
