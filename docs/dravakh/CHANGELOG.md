@@ -1,5 +1,23 @@
 # Dravakh fork changelog
 
+## 2026-09-18 — Landmarks v1 approved
+
+- added `src/dravakh/landmarks.ts` as a canonical 15-landmark layer using native persistent Azgaar markers;
+- bound one approved primary landmark to every canonical province without converting landmarks into artificial city/burg semantics;
+- resolved placement deterministically from the canonical province/landmark anchor plan;
+- validated province containment, valid land, anchor proximity, coastal requirements, river association, highland placement and Highhallow insularity;
+- stored canonical landmark names in marker notes and locked/pinned all canonical markers against random regeneration;
+- preserved non-canonical Azgaar-generated marker data but changed the default Dravakh map view to prioritize pinned canonical landmarks, removing visual clutter without destructive deletion;
+- extended the focused Playwright gate to require all 15 canonical landmark identities and exact landmark persistence across a real machine `.map` save/reload;
+- passed final focused map-gate run `35376241737`, job `105701471298`, on head `acd9cdb228cfd822e4e8bfbb3ec4d6b4ade0c3cc`;
+- archived final map-gate artifact `10560172108`, digest `sha256:87af2d5b7a84b8c79541ee8884cd1dcd86b3decfbae7f847b03a50f76dd67fcb`;
+- machine-exported canonical milestone `dravakh-map-v2-20260918-landmarks-v1.map`, size `4,561,238 bytes`;
+- recorded milestone SHA-256 `1de3271d04d38fee37862f698a8148bbe0c93205a4971fc048090301670e51dc`;
+- archived a second durable copy under the project Drive Milestones folder with file ID `1lBfDcvriok1X1h9_UzckKZOsOmcD3sY_`;
+- preserved the physical, hydrology and province milestones separately;
+- advanced the next official gate to Geographic Detail v1;
+- kept principal routes deferred through the geographic-detail phase.
+
 ## 2026-09-18 — Province Placement v1 approved
 
 - implemented deterministic territorial reconstruction in `src/dravakh/provinces.ts` using native Azgaar land-cell topology instead of hand-drawn SVG polygons;
