@@ -568,6 +568,14 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
         };
       }),
     biomes: Array.from((window as any).pack.cells.biome as ArrayLike<number>),
+    biomePalette: ((window as any).pack.biomes as any[]).map(biome => ({
+      i: biome.i,
+      name: biome.name,
+      color: biome.color,
+      iconsDensity: biome.iconsDensity
+    })),
+    reliefStyle: structuredClone((window as any).styles.relief.options),
+    geographyMetadata: notes.find(note => note.id === "dravakh-geographic-detail-v1") ?? null,
     relief: ((window as any).pack.relief as any[]).map(icon => ({
       icon: icon.icon,
       x: icon.x,
@@ -690,6 +698,14 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
         };
       }),
     biomes: Array.from((window as any).pack.cells.biome as ArrayLike<number>),
+    biomePalette: ((window as any).pack.biomes as any[]).map(biome => ({
+      i: biome.i,
+      name: biome.name,
+      color: biome.color,
+      iconsDensity: biome.iconsDensity
+    })),
+    reliefStyle: structuredClone((window as any).styles.relief.options),
+    geographyMetadata: notes.find(note => note.id === "dravakh-geographic-detail-v1") ?? null,
     relief: ((window as any).pack.relief as any[]).map(icon => ({
       icon: icon.icon,
       x: icon.x,
