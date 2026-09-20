@@ -249,6 +249,54 @@ A second durable archive exists in the project Drive Milestones folder with ID:
 
 No principal routes were created during Geographic Detail v1.
 
+## Approved visual-finish baseline
+
+**Visual Finish v1 is canonical as of 2026-09-20.**
+
+This milestone polishes the Dravakh Map Studio authoring presentation without changing physical geography, hydrology, province assignment, biome assignment or landmark placement.
+
+Approved treatment includes:
+
+- muted landmass support color;
+- biome opacity `0.88`;
+- gray relief opacity `0.72`;
+- subdued blue-gray rivers and lakes;
+- dark earth coastline;
+- thin aged-bronze province borders;
+- low-opacity province fill for editor overlays;
+- unified bronze heraldic shield styling for all 15 canonical landmarks;
+- deeper dark vignette framing.
+
+The visual-finish layer is persisted through native style data plus canonical metadata and is verified after machine `.map` reload.
+
+Canonical visual-finish milestone:
+
+`dravakh-map-v2-20260920-visual-finish-v1.map`
+
+Size: `4,836,783 bytes`
+
+SHA-256:
+
+`c91c28211d18c0ed64a1859a0a93d853f9bd423e461338c6999446f526a9a8fb`
+
+Final validated head:
+
+`7aada0b32f35beacf1ba6320681a6ff0ce2685fe`
+
+Focused map gate:
+
+- run `35532027212`
+- job `106134214750`
+- artifact `10612165408`
+- artifact digest `sha256:5853c35162757e215b58b8107ab0a7d71912f165dafd6f052f4d00bbbbfb62f6`
+- result **success**
+
+A second durable archive exists in the project Drive Milestones folder with ID:
+
+`1AscKpEGVUVP0UcckcSso4sMMR8W9Tepk`
+
+No principal routes were created during Visual Finish v1.
+
 ## Historical lost Work-session state
 
 A prior Azgaar session in ChatGPT Work created a browser-local reconstruction that was lost before durable export. It remains historical context only and does not override the current canonical physical, hydrology or province milestones.
@@ -270,8 +318,8 @@ The dedicated `Validate Dravakh Map Gate` workflow is the focused runtime gate f
 
 ## Next technical milestone
 
-**Visual Finish v1 — polish the cartographic presentation without changing the canonical world structure.**
+**Routes & Infrastructure v1 — define the principal cartographic connections of the approved world.**
 
-This gate may refine border hierarchy, river/coast treatment, material feel, vignette, landmark-symbol presentation and overall visual hierarchy while preserving Physical Baseline v1.1, Hydrology v1, Province Placement v1, Landmarks v1 and Geographic Detail v1.
+This gate may add principal overland routes, passes, crossings and necessary maritime connections while treating Physical Baseline v1.1, Hydrology v1, Province Placement v1, Landmarks v1, Geographic Detail v1 and Visual Finish v1 as immutable inputs.
 
-Principal routes remain deferred until a dedicated infrastructure/route gate is explicitly opened.
+This remains a map/infrastructure phase only. Economy, wars, progression and other gameplay systems remain out of scope.
