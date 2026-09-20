@@ -217,6 +217,7 @@ function prepareMapData(): string {
 async function saveToStorage(mapData: string, showTip = false): Promise<void> {
   const blob = new Blob([mapData], { type: "text/plain" });
   await ldb.set("lastMap", blob);
+  window.dispatchEvent(new CustomEvent("dravakh:browser-save", { detail: { at: Date.now() } }));
   showTip && tip("Map is saved to the browser storage", false, "success");
 }
 
@@ -230,12 +231,18 @@ function saveToMachine(mapData: string, filename: string): void {
   link.href = URL;
   link.click();
 
+  window.dispatchEvent(
+    new CustomEvent("dravakh:durable-backup", { detail: { at: Date.now(), method: "machine", filename } })
+  );
   tip(savedMessage("Map"), true, "success", 8000);
   setTimeout(() => window.URL.revokeObjectURL(URL), 5000);
 }
 
 async function saveToDropbox(mapData: string, filename: string): Promise<void> {
   await Services.Cloud.save(filename, mapData);
+  window.dispatchEvent(
+    new CustomEvent("dravakh:durable-backup", { detail: { at: Date.now(), method: "dropbox", filename } })
+  );
   tip("Map is saved to your Dropbox", true, "success", 8000);
 }
 

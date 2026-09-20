@@ -1,21 +1,23 @@
 {
   "name": "fantasy-map-generator",
-  "productName": "Fantasy Map Generator",
+  "productName": "Dravakh Map Studio",
   "version": "1.151.2",
-  "description": "Azgaar's _Fantasy Map Generator_ is a free web application that helps fantasy writers, game masters, and cartographers create and edit fantasy maps.",
-  "homepage": "https://github.com/Azgaar/Fantasy-Map-Generator#readme",
+  "description": "Project-controlled cartography studio for Dravakh: House of Habits, derived from Azgaar's Fantasy Map Generator.",
+  "homepage": "https://github.com/rafasms93-dot/dravakh-map-studio#readme",
   "bugs": {
-    "url": "https://github.com/Azgaar/Fantasy-Map-Generator/issues"
+    "url": "https://github.com/rafasms93-dot/dravakh-map-studio/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Azgaar/Fantasy-Map-Generator.git"
+    "url": "git+https://github.com/rafasms93-dot/dravakh-map-studio.git"
   },
   "license": "MIT",
-  "author": "Azgaar",
+  "author": "Azgaar; Dravakh Map Studio customization by rafasms93-dot",
   "main": "dist-electron/main.js",
   "scripts": {
+    "predev": "npm run generate:dravakh-heightmap && npm run validate:dravakh-baseline",
     "dev": "vite",
+    "prebuild": "npm run generate:dravakh-heightmap && npm run validate:dravakh-baseline",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "electron": "node scripts/electron.mjs",
@@ -24,6 +26,8 @@
     "lint": "biome check --write",
     "sync-version": "node scripts/sync-version.js",
     "stamp-assets": "node scripts/stamp-assets.js",
+    "generate:dravakh-heightmap": "node scripts/generate-dravakh-heightmap.mjs",
+    "validate:dravakh-baseline": "node scripts/validate-dravakh-baseline.mjs",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {

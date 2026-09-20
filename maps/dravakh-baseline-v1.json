@@ -1,0 +1,50 @@
+{
+  "id": "dravakh-baseline-v1",
+  "status": "canonical-physical-baseline",
+  "revision": "1.1",
+  "approvedAt": "2026-09-09",
+  "game": "Dravakh: House of Habits",
+  "internalProject": "Nova Valyria OS",
+  "source": {
+    "generator": "scripts/generate-dravakh-heightmap.mjs",
+    "output": "public/heightmaps/dravakh.png",
+    "width": 768,
+    "height": 1152,
+    "deterministic": true,
+    "generatedSha256": "301046ba2d330118b1893aa1ca46ba286c5e35389679ed218632d4f2facaa415"
+  },
+  "milestone": {
+    "file": "dravakh-map-v2-20260909-1141-physical-baseline.map",
+    "sizeBytes": 4383073,
+    "sha256": "b20d62e3d200cbdf05baa8d75019a35c17d27c5d0ec0067743ff1d2619c4d814",
+    "verification": "machine-exported and reloaded successfully with exact seed, 768x1152 dimensions and height-grid equality",
+    "cloudArchive": "Projeto: Nova Valyria OS / 03 — World & Design Bible / Mapa & Map Studio / Milestones / dravakh-map-v2-20260909-1141-physical-baseline-archive.zip"
+  },
+  "constraints": {
+    "mainContinent": "single vertically oriented landmass",
+    "highhallow": "separate eastern island domain with continuous maritime channel",
+    "provinceCount": 15,
+    "routesBeforeProvinceApproval": false
+  },
+  "reliefAnchors": [
+    { "id": "sanctum-crest", "x": 0.49, "y": 0.18, "role": "highest north-central mountain spine" },
+    { "id": "white-keep", "x": 0.64, "y": 0.20, "role": "elevated northeastern coast" },
+    { "id": "soldiers-wall-west", "x": 0.38, "y": 0.36, "role": "western choke shoulder" },
+    { "id": "soldiers-wall-east", "x": 0.59, "y": 0.36, "role": "eastern choke shoulder" },
+    { "id": "ironforge-reaches", "x": 0.63, "y": 0.51, "role": "independent center-east massif" },
+    { "id": "alliance-high", "x": 0.62, "y": 0.65, "role": "elevated east-southeast transition" },
+    { "id": "ironbank-ridge", "x": 0.30, "y": 0.83, "role": "old southwestern massif" },
+    { "id": "highhallow", "x": 0.86, "y": 0.40, "role": "island relief" }
+  ],
+  "basins": [
+    { "id": "dreamrest", "x": 0.29, "y": 0.22 },
+    { "id": "hearthkeep", "x": 0.49, "y": 0.51 },
+    { "id": "rivermend", "x": 0.49, "y": 0.69 },
+    { "id": "harvest-hall", "x": 0.34, "y": 0.72 }
+  ],
+  "coastalFeatures": [
+    { "id": "highfest-haven-bay", "x": 0.70, "y": 0.80 },
+    { "id": "citadel-reach-inlet", "x": 0.23, "y": 0.50 },
+    { "id": "highhallow-channel", "xMin": 0.735, "xMax": 0.795, "yMin": 0.25, "yMax": 0.58 }
+  ]
+}

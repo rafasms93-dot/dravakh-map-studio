@@ -1,0 +1,54 @@
+# Status checklist
+
+- [x] fork confirmed writable;
+- [x] isolated development branch created;
+- [x] package product metadata updated;
+- [x] PWA metadata updated;
+- [x] GitHub Pages workflow prepared for Dravakh branch;
+- [x] canonical Dravakh project/province data added;
+- [x] lost Work-session state documented;
+- [x] durable `.map` backup protocol documented;
+- [x] map artifact directory reserved;
+- [x] upstream attribution preserved;
+- [x] runtime title updated through Vite;
+- [x] upstream analytics removed from fork runtime;
+- [x] Dravakh `.map` backup surface implemented;
+- [x] deterministic physical baseline generator added;
+- [x] `Dravakh Baseline v1` registered in precreated heightmaps;
+- [x] deterministic source validation added for the baseline PNG;
+- [x] canonical hydrology plan and runtime validation added;
+- [x] canonical anchors for all 15 provinces/landmarks added;
+- [x] focused Dravakh map validation workflow added;
+- [x] GitHub Actions execution verified;
+- [x] TypeScript / production compile passed on Province Placement v1 head;
+- [x] lint passed on Province Placement v1 head;
+- [x] unit tests passed on Province Placement v1 head;
+- [x] Dravakh validation passed on Province Placement v1 head;
+- [x] GitHub Pages deployment verified on Province Placement v1 head;
+- [x] focused map Playwright gate passed on Province Placement v1 head;
+- [x] focused map Playwright gate passed on Landmarks v1 final head;
+- [x] Landmarks v1 `.map` exported and exactly reloaded;
+- [x] second durable Landmarks v1 archive stored in Drive;
+- [ ] full repository Playwright workflow completed successfully on Province Placement v1 head;
+- [ ] Nix package workflow green on Province Placement v1 head;
+- [x] physical baseline visually approved inside Azgaar runtime;
+- [x] Highhallow runtime separation approved;
+- [x] Azgaar-derived Hydrology v1 approved;
+- [x] exactly 15 canonical provinces reconstructed and technically approved;
+- [x] all valid land assigned to one Dravakh kingdom and one canonical province;
+- [x] Highhallow province remains fully insular;
+- [x] Province Placement v1 `.map` exported and successfully reloaded without territorial recomputation;
+- [x] second durable Province Placement v1 archive stored in Drive;
+- [x] 15/15 primary landmarks placed and approved;
+- [x] Geographic Detail v1 completed and approved;
+- [x] Geographic Detail v1 `.map` exported and exactly reloaded;
+- [x] second durable Geographic Detail v1 archive stored in Drive;
+- [x] Visual Finish v1 completed and approved;
+- [x] Visual Finish v1 `.map` exported and exactly reloaded;
+- [x] second durable Visual Finish v1 archive stored in Drive;
+- [ ] Routes & Infrastructure v1 completed and approved;
+- [ ] principal routes created;
+- [ ] PR #1 ready to leave Draft;
+- [ ] PR #1 merged into `master`.
+
+Visual Finish v1 is canonical and durably archived. Routes & Infrastructure v1 is the next cartographic gate.
