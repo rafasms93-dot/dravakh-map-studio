@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { DRAVAKH_PROJECT, DRAVAKH_PROVINCES } from "../../src/data/dravakh-project";
+import { DRAVAKH_GEOGRAPHY_VERSION } from "../../src/dravakh/geography";
 import provincePlan from "../../maps/dravakh-province-anchors-v1.json";
 
 const selectPreset = (page: Page, name: string) =>
@@ -40,7 +41,7 @@ const distance = (a: NormalizedPoint, b: NormalizedPoint) => Math.hypot(a[0] - b
 const pathDistance = (river: HydrologyRiver, point: NormalizedPoint) =>
   Math.min(...river.path.map(candidate => distance(candidate, point)));
 
-test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landmarks, and survives a durable .map reload", async ({ page }, testInfo) => {
+test("Dravakh canonical map preserves structural gates, applies Geographic Detail v1, and survives a durable .map reload", async ({ page }, testInfo) => {
   test.setTimeout(180000);
 
   // Match the canonical Dravakh baseline aspect ratio (768 × 1152) so the
@@ -384,6 +385,92 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
     contentType: "image/png"
   });
 
+  const geography = await page.evaluate(spec => {
+    const world = window as any;
+    const { pack } = world;
+    const landCells = Array.from(pack.cells.i as ArrayLike<number>).filter(
+      (cell: number) => pack.cells.h[cell] >= 20
+    );
+
+    const provinceBiomes = spec.map((definition, index) => {
+      const provinceId = index + 1;
+      const cells = landCells.filter((cell: number) => pack.cells.province[cell] === provinceId);
+      const counts: Record<string, number> = {};
+      for (const cell of cells) {
+        const biome = String(pack.cells.biome[cell]);
+        counts[biome] = (counts[biome] ?? 0) + 1;
+      }
+      return { id: definition.id, name: definition.name, cells: cells.length, counts };
+    });
+
+    return {
+      version: (world.DravakhGeography?.apply?.() as any)?.version ?? null,
+      landCellCount: landCells.length,
+      marineLandCells: landCells.filter((cell: number) => pack.cells.biome[cell] === 0).length,
+      provinceBiomes,
+      reliefIconCount: (pack.relief ?? []).length,
+      reliefTypes: Array.from(
+        new Set((pack.relief ?? []).map((icon: any) => String(icon.icon).replace(/^relief-/, "").replace(/-\d+.*$/, "")))
+      ).sort()
+    };
+  }, canonicalProvinceSpec);
+
+  expect(geography.version).toBe(DRAVAKH_GEOGRAPHY_VERSION);
+  expect(geography.landCellCount).toBe(territory.landCellCount);
+  expect(geography.marineLandCells).toBe(0);
+  expect(geography.reliefIconCount).toBeGreaterThan(0);
+  expect(geography.reliefTypes.length).toBeGreaterThan(1);
+
+  const allowedBiomes: Record<string, number[]> = {
+    rivermend: [4, 6, 12],
+    "harvest-hall": [4, 6, 12],
+    dreamrest: [6, 8, 9, 12],
+    "ironforge-reaches": [2, 4, 6],
+    "white-keep": [9, 10, 11],
+    "sanctum-crest": [6, 9, 10, 11],
+    "citadel-reach": [2, 6, 8],
+    "kings-road": [4, 6, 12],
+    "swiftstride-pass": [2, 4, 6],
+    hearthkeep: [4, 6, 12],
+    "soldiers-wall": [4, 6, 9],
+    "alliance-high": [4, 6, 9],
+    highhallow: [8, 9, 10, 12],
+    "highfest-haven": [4, 6, 12],
+    "ironbank-ridge": [2, 4, 6]
+  };
+
+  for (const province of geography.provinceBiomes) {
+    expect(province.cells).toBeGreaterThan(0);
+    const allowed = new Set(allowedBiomes[province.id]);
+    expect(Object.keys(province.counts).every(biome => allowed.has(Number(biome)))).toBe(true);
+  }
+
+  const biomeCounts = (id: string) => geography.provinceBiomes.find(province => province.id === id)!.counts;
+  expect(Number(biomeCounts("rivermend")["12"] ?? 0)).toBeGreaterThan(0);
+  expect(Number(biomeCounts("harvest-hall")["4"] ?? 0)).toBeGreaterThan(0);
+  expect(Number(biomeCounts("dreamrest")["8"] ?? 0) + Number(biomeCounts("dreamrest")["6"] ?? 0)).toBeGreaterThan(0);
+  expect(Number(biomeCounts("ironforge-reaches")["2"] ?? 0)).toBeGreaterThan(0);
+  expect(Number(biomeCounts("white-keep")["10"] ?? 0) + Number(biomeCounts("white-keep")["11"] ?? 0)).toBeGreaterThan(0);
+  expect(Number(biomeCounts("sanctum-crest")["10"] ?? 0) + Number(biomeCounts("sanctum-crest")["11"] ?? 0)).toBeGreaterThan(0);
+  expect(Number(biomeCounts("highhallow")["8"] ?? 0) + Number(biomeCounts("highhallow")["9"] ?? 0)).toBeGreaterThan(0);
+
+  await testInfo.attach("Dravakh Geographic Detail v1 — biome evidence", {
+    body: Buffer.from(JSON.stringify(geography, null, 2)),
+    contentType: "application/json"
+  });
+
+  await page.evaluate(() => {
+    (window as any).Layers.set(["biomes", "lakes", "rivers", "relief", "borders", "markers", "vignette"]);
+    document.getElementById("markers")?.setAttribute("pinned", "1");
+  });
+  await page.waitForTimeout(700);
+  const geographyPath = testInfo.outputPath("dravakh-geographic-detail-v1.png");
+  await page.locator("#map").screenshot({ path: geographyPath });
+  await testInfo.attach("Dravakh Geographic Detail v1 — biome and relief", {
+    path: geographyPath,
+    contentType: "image/png"
+  });
+
   await testInfo.attach("Dravakh Provinces v1 — territorial gate", {
     body: Buffer.from(JSON.stringify({ canonicalProvinceSpec, territory }, null, 2)),
     contentType: "application/json"
@@ -403,10 +490,10 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
     contentType: "image/png"
   });
 
-  // Landmark milestone: export a real machine .map and prove that terrain,
-  // hydrology, territories and all 15 canonical landmarks survive a full authoring reload.
-  const milestoneFilename = "dravakh-map-v2-20260918-landmarks-v1.map";
-  const canonicalMapName = "Dravakh Landmarks v1";
+  // Geographic-detail milestone: export a real machine .map and prove that terrain,
+  // hydrology, territories, landmarks, biomes and deterministic relief survive a full authoring reload.
+  const milestoneFilename = "dravakh-map-v2-20260920-geographic-detail-v1.map";
+  const canonicalMapName = "Dravakh Geographic Detail v1";
 
   await page.evaluate(name => {
     const input = document.getElementById("mapName") as HTMLInputElement;
@@ -480,6 +567,13 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
           noteLegend: note?.legend ?? null
         };
       }),
+    biomes: Array.from((window as any).pack.cells.biome as ArrayLike<number>),
+    relief: ((window as any).pack.relief as any[]).map(icon => ({
+      icon: icon.icon,
+      x: icon.x,
+      y: icon.y,
+      s: icon.s
+    })),
     rivers: ((window as any).pack.rivers as any[]).map(river => ({
       i: river.i,
       source: river.source,
@@ -503,9 +597,9 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
   await download.saveAs(milestonePath);
   const mapData = await readFile(milestonePath, "utf8");
   expect(mapData.length).toBeGreaterThan(10000);
-  expect(mapData).toContain("|Dravakh Landmarks v1|");
+  expect(mapData).toContain("|Dravakh Geographic Detail v1|");
 
-  await testInfo.attach("Dravakh Landmarks v1 — durable .map", {
+  await testInfo.attach("Dravakh Geographic Detail v1 — durable .map", {
     path: milestonePath,
     contentType: "text/plain"
   });
@@ -513,9 +607,9 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
   // Deliberately alter a persisted field so the following state can only pass
   // after the downloaded .map has genuinely been parsed and restored.
   await page.evaluate(() => {
-    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-LANDMARKS-RELOAD-SENTINEL";
+    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-GEOGRAPHY-RELOAD-SENTINEL";
   });
-  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-LANDMARKS-RELOAD-SENTINEL");
+  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-GEOGRAPHY-RELOAD-SENTINEL");
 
   await page.evaluate(async serializedMap => {
     const blob = new Blob([serializedMap], { type: "text/plain" });
@@ -595,6 +689,13 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
           noteLegend: note?.legend ?? null
         };
       }),
+    biomes: Array.from((window as any).pack.cells.biome as ArrayLike<number>),
+    relief: ((window as any).pack.relief as any[]).map(icon => ({
+      icon: icon.icon,
+      x: icon.x,
+      y: icon.y,
+      s: icon.s
+    })),
     rivers: ((window as any).pack.rivers as any[]).map(river => ({
       i: river.i,
       source: river.source,
@@ -613,9 +714,9 @@ test("Dravakh canonical map derives hydrology, applies 15 provinces and 15 landm
   await selectPreset(page, "physical");
   await page.waitForTimeout(800);
   await dismissUpdateDialog(page);
-  const reloadedPhysicalPath = testInfo.outputPath("dravakh-landmarks-v1-physical-after-reload.png");
+  const reloadedPhysicalPath = testInfo.outputPath("dravakh-geographic-detail-v1-physical-after-reload.png");
   await page.locator("#map").screenshot({ path: reloadedPhysicalPath });
-  await testInfo.attach("Dravakh Landmarks v1 — physical after .map reload", {
+  await testInfo.attach("Dravakh Geographic Detail v1 — physical after .map reload", {
     path: reloadedPhysicalPath,
     contentType: "image/png"
   });
