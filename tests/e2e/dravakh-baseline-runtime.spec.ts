@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { DRAVAKH_PROJECT, DRAVAKH_PROVINCES } from "../../src/data/dravakh-project";
 import { DRAVAKH_GEOGRAPHY_VERSION } from "../../src/dravakh/geography";
+import { DRAVAKH_VISUAL_FINISH_VERSION } from "../../src/dravakh/visual-finish";
 import provincePlan from "../../maps/dravakh-province-anchors-v1.json";
 
 const selectPreset = (page: Page, name: string) =>
@@ -41,7 +42,7 @@ const distance = (a: NormalizedPoint, b: NormalizedPoint) => Math.hypot(a[0] - b
 const pathDistance = (river: HydrologyRiver, point: NormalizedPoint) =>
   Math.min(...river.path.map(candidate => distance(candidate, point)));
 
-test("Dravakh canonical map preserves structural gates, applies Geographic Detail v1, and survives a durable .map reload", async ({ page }, testInfo) => {
+test("Dravakh canonical map preserves all structural gates, applies Visual Finish v1, and survives a durable .map reload", async ({ page }, testInfo) => {
   test.setTimeout(180000);
 
   // Match the canonical Dravakh baseline aspect ratio (768 × 1152) so the
@@ -471,6 +472,103 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
     contentType: "image/png"
   });
 
+  const visualFinish = await page.evaluate(() => {
+    const world = window as any;
+    const summary = world.DravakhVisualFinish?.apply?.() as any;
+    const landmarkMarkers = (world.pack.markers as any[])
+      .filter(marker => marker.type.startsWith("dravakh-landmark-"))
+      .map(marker => ({
+        type: marker.type,
+        fill: marker.fill,
+        stroke: marker.stroke,
+        px: marker.px,
+        size: marker.size,
+        pin: marker.pin,
+        cell: marker.cell
+      }));
+
+    return {
+      version: summary?.version ?? null,
+      styles: {
+        landmass: structuredClone(world.styles.landmass.attrs),
+        biomes: structuredClone(world.styles.biomes.attrs),
+        relief: structuredClone(world.styles.relief.attrs),
+        rivers: structuredClone(world.styles.rivers.attrs),
+        freshwater: structuredClone(world.styles.lakes.freshwater.attrs),
+        frozenLake: structuredClone(world.styles.lakes.frozen.attrs),
+        seaCoast: structuredClone(world.styles.coastline.sea_island.attrs),
+        lakeCoast: structuredClone(world.styles.coastline.lake_island.attrs),
+        provinceBorders: structuredClone(world.styles.borders.provinceBorders.attrs),
+        provinces: structuredClone(world.styles.provinces.attrs),
+        markers: structuredClone(world.styles.markers.attrs),
+        vignette: structuredClone(world.styles.vignette.attrs)
+      },
+      landmarkMarkers,
+      metadata: notes.find(note => note.id === "dravakh-visual-finish-v1") ?? null
+    };
+  });
+
+  expect(visualFinish.version).toBe(DRAVAKH_VISUAL_FINISH_VERSION);
+  expect(visualFinish.styles.landmass.fill).toBe("#b7af99");
+  expect(visualFinish.styles.biomes.opacity).toBe(0.88);
+  expect(visualFinish.styles.relief.opacity).toBe(0.72);
+  expect(visualFinish.styles.rivers).toMatchObject({ opacity: 0.94, fill: "#587784" });
+  expect(visualFinish.styles.freshwater).toMatchObject({
+    opacity: 0.78,
+    fill: "#718895",
+    stroke: "#4e6570",
+    "stroke-width": 0.55
+  });
+  expect(visualFinish.styles.frozenLake).toMatchObject({
+    opacity: 0.92,
+    fill: "#c9d4d4",
+    stroke: "#94a7aa",
+    "stroke-width": 0.3
+  });
+  expect(visualFinish.styles.seaCoast).toMatchObject({
+    opacity: 0.82,
+    stroke: "#403a31",
+    "stroke-width": 0.62
+  });
+  expect(visualFinish.styles.provinceBorders).toMatchObject({
+    opacity: 0.86,
+    stroke: "#735d40",
+    "stroke-width": 0.18,
+    "stroke-dasharray": "1.1 0.65",
+    "stroke-linecap": "round"
+  });
+  expect(visualFinish.styles.provinces).toMatchObject({ opacity: 0.22, fill: "#4d3d2f" });
+  expect(visualFinish.styles.vignette).toMatchObject({ opacity: 0.42, fill: "#17120e" });
+  expect(visualFinish.metadata?.name).toBe("Dravakh Visual Finish v1");
+  expect(visualFinish.landmarkMarkers).toHaveLength(15);
+  expect(
+    visualFinish.landmarkMarkers.every(
+      marker =>
+        marker.fill === "#bea46e" &&
+        marker.stroke === "#3d3022" &&
+        marker.px === 10 &&
+        marker.size === 34 &&
+        marker.pin === "shield"
+    )
+  ).toBe(true);
+
+  await testInfo.attach("Dravakh Visual Finish v1 — style evidence", {
+    body: Buffer.from(JSON.stringify(visualFinish, null, 2)),
+    contentType: "application/json"
+  });
+
+  await page.evaluate(() => {
+    (window as any).Layers.set(["biomes", "lakes", "rivers", "relief", "borders", "markers", "vignette"]);
+    document.getElementById("markers")?.setAttribute("pinned", "1");
+  });
+  await page.waitForTimeout(600);
+  const visualFinishPath = testInfo.outputPath("dravakh-visual-finish-v1.png");
+  await page.locator("#map").screenshot({ path: visualFinishPath });
+  await testInfo.attach("Dravakh Visual Finish v1 — canonical map presentation", {
+    path: visualFinishPath,
+    contentType: "image/png"
+  });
+
   await testInfo.attach("Dravakh Provinces v1 — territorial gate", {
     body: Buffer.from(JSON.stringify({ canonicalProvinceSpec, territory }, null, 2)),
     contentType: "application/json"
@@ -490,10 +588,10 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
     contentType: "image/png"
   });
 
-  // Geographic-detail milestone: export a real machine .map and prove that terrain,
-  // hydrology, territories, landmarks, biomes and deterministic relief survive a full authoring reload.
-  const milestoneFilename = "dravakh-map-v2-20260920-geographic-detail-v1.map";
-  const canonicalMapName = "Dravakh Geographic Detail v1";
+  // Visual-finish milestone: export a real machine .map and prove that all structural,
+  // geographic and canonical visual presentation data survive a full authoring reload.
+  const milestoneFilename = "dravakh-map-v2-20260920-visual-finish-v1.map";
+  const canonicalMapName = "Dravakh Visual Finish v1";
 
   await page.evaluate(name => {
     const input = document.getElementById("mapName") as HTMLInputElement;
@@ -576,6 +674,21 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
     })),
     reliefStyle: structuredClone((window as any).styles.relief.options),
     geographyMetadata: notes.find(note => note.id === "dravakh-geographic-detail-v1") ?? null,
+    visualFinishMetadata: notes.find(note => note.id === "dravakh-visual-finish-v1") ?? null,
+    visualFinishStyles: {
+      landmass: structuredClone((window as any).styles.landmass.attrs),
+      biomes: structuredClone((window as any).styles.biomes.attrs),
+      relief: structuredClone((window as any).styles.relief.attrs),
+      rivers: structuredClone((window as any).styles.rivers.attrs),
+      freshwater: structuredClone((window as any).styles.lakes.freshwater.attrs),
+      frozenLake: structuredClone((window as any).styles.lakes.frozen.attrs),
+      seaCoast: structuredClone((window as any).styles.coastline.sea_island.attrs),
+      lakeCoast: structuredClone((window as any).styles.coastline.lake_island.attrs),
+      provinceBorders: structuredClone((window as any).styles.borders.provinceBorders.attrs),
+      provinces: structuredClone((window as any).styles.provinces.attrs),
+      markers: structuredClone((window as any).styles.markers.attrs),
+      vignette: structuredClone((window as any).styles.vignette.attrs)
+    },
     relief: ((window as any).pack.relief as any[]).map(icon => ({
       icon: icon.icon,
       x: icon.x,
@@ -605,9 +718,9 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
   await download.saveAs(milestonePath);
   const mapData = await readFile(milestonePath, "utf8");
   expect(mapData.length).toBeGreaterThan(10000);
-  expect(mapData).toContain("|Dravakh Geographic Detail v1|");
+  expect(mapData).toContain("|Dravakh Visual Finish v1|");
 
-  await testInfo.attach("Dravakh Geographic Detail v1 — durable .map", {
+  await testInfo.attach("Dravakh Visual Finish v1 — durable .map", {
     path: milestonePath,
     contentType: "text/plain"
   });
@@ -615,9 +728,9 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
   // Deliberately alter a persisted field so the following state can only pass
   // after the downloaded .map has genuinely been parsed and restored.
   await page.evaluate(() => {
-    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-GEOGRAPHY-RELOAD-SENTINEL";
+    (document.getElementById("mapName") as HTMLInputElement).value = "DRAVAKH-VISUAL-FINISH-RELOAD-SENTINEL";
   });
-  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-GEOGRAPHY-RELOAD-SENTINEL");
+  await expect(page.locator("#mapName")).toHaveValue("DRAVAKH-VISUAL-FINISH-RELOAD-SENTINEL");
 
   await page.evaluate(async serializedMap => {
     const blob = new Blob([serializedMap], { type: "text/plain" });
@@ -706,6 +819,21 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
     })),
     reliefStyle: structuredClone((window as any).styles.relief.options),
     geographyMetadata: notes.find(note => note.id === "dravakh-geographic-detail-v1") ?? null,
+    visualFinishMetadata: notes.find(note => note.id === "dravakh-visual-finish-v1") ?? null,
+    visualFinishStyles: {
+      landmass: structuredClone((window as any).styles.landmass.attrs),
+      biomes: structuredClone((window as any).styles.biomes.attrs),
+      relief: structuredClone((window as any).styles.relief.attrs),
+      rivers: structuredClone((window as any).styles.rivers.attrs),
+      freshwater: structuredClone((window as any).styles.lakes.freshwater.attrs),
+      frozenLake: structuredClone((window as any).styles.lakes.frozen.attrs),
+      seaCoast: structuredClone((window as any).styles.coastline.sea_island.attrs),
+      lakeCoast: structuredClone((window as any).styles.coastline.lake_island.attrs),
+      provinceBorders: structuredClone((window as any).styles.borders.provinceBorders.attrs),
+      provinces: structuredClone((window as any).styles.provinces.attrs),
+      markers: structuredClone((window as any).styles.markers.attrs),
+      vignette: structuredClone((window as any).styles.vignette.attrs)
+    },
     relief: ((window as any).pack.relief as any[]).map(icon => ({
       icon: icon.icon,
       x: icon.x,
@@ -730,9 +858,9 @@ test("Dravakh canonical map preserves structural gates, applies Geographic Detai
   await selectPreset(page, "physical");
   await page.waitForTimeout(800);
   await dismissUpdateDialog(page);
-  const reloadedPhysicalPath = testInfo.outputPath("dravakh-geographic-detail-v1-physical-after-reload.png");
+  const reloadedPhysicalPath = testInfo.outputPath("dravakh-visual-finish-v1-after-reload.png");
   await page.locator("#map").screenshot({ path: reloadedPhysicalPath });
-  await testInfo.attach("Dravakh Geographic Detail v1 — physical after .map reload", {
+  await testInfo.attach("Dravakh Visual Finish v1 — map after .map reload", {
     path: reloadedPhysicalPath,
     contentType: "image/png"
   });
