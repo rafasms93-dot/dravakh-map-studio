@@ -2,8 +2,9 @@ import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { DRAVAKH_PROJECT, DRAVAKH_PROVINCES } from "../../src/data/dravakh-project";
 import { DRAVAKH_GEOGRAPHY_VERSION } from "../../src/dravakh/geography";
-import { DRAVAKH_VISUAL_FINISH_VERSION } from "../../src/dravakh/visual-finish";
 import provincePlan from "../../maps/dravakh-province-anchors-v1.json";
+
+const DRAVAKH_VISUAL_FINISH_VERSION = "dravakh-visual-finish-v1";
 
 const selectPreset = (page: Page, name: string) =>
   page.evaluate(name => {
