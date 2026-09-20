@@ -1,5 +1,25 @@
 # Dravakh fork changelog
 
+## 2026-09-20 — Visual Finish v1 approved
+
+- added `src/dravakh/visual-finish.ts` as a non-structural canonical presentation layer;
+- preserved Physical Baseline v1.1, Hydrology v1, Province Placement v1, Landmarks v1 and Geographic Detail v1 unchanged;
+- replaced remaining default-bright authoring treatment with muted landmass, biome, water and coastline presentation;
+- refined province borders to a thin aged-bronze hierarchy so geography remains visually dominant;
+- standardized all 15 canonical landmark markers as bronze heraldic shields without changing their cells or identities;
+- deepened vignette framing for the Dark Fantasy Heráldico Premium authoring direction;
+- added canonical `dravakh-visual-finish-v1` metadata and preserved saved style data after `.map` reload;
+- extended the focused Playwright gate to assert the exact landmass, biome, relief, river, lake, coastline, province-border, province-fill, marker and vignette style contract;
+- visually reviewed and approved the full-map rendering after the style pass;
+- passed focused map-gate run `35532027212`, job `106134214750`, on head `7aada0b32f35beacf1ba6320681a6ff0ce2685fe`;
+- archived artifact `10612165408`, digest `sha256:5853c35162757e215b58b8107ab0a7d71912f165dafd6f052f4d00bbbbfb62f6`;
+- machine-exported `dravakh-map-v2-20260920-visual-finish-v1.map`, size `4,836,783 bytes`;
+- recorded milestone SHA-256 `c91c28211d18c0ed64a1859a0a93d853f9bd423e461338c6999446f526a9a8fb`;
+- archived a second durable copy in the Drive Milestones folder with ID `1AscKpEGVUVP0UcckcSso4sMMR8W9Tepk`;
+- created `docs/dravakh/VISUAL_FINISH_V1.md`;
+- advanced the next official gate to Routes & Infrastructure v1;
+- created no principal routes in the Visual Finish phase.
+
 ## 2026-09-20 — Geographic Detail v1 approved
 
 - added `src/dravakh/geography.ts` as a deterministic province-aware biome and secondary-relief layer;
