@@ -19,6 +19,22 @@ const BIOME = {
   wetland: 12
 } as const;
 
+const DRAVAKH_BIOME_COLORS: Record<number, string> = {
+  [BIOME.marine]: "#466eab",
+  [BIOME.hotDesert]: "#b6a276",
+  [BIOME.coldDesert]: "#878675",
+  [BIOME.savanna]: "#9e986d",
+  [BIOME.grassland]: "#909a6d",
+  [BIOME.tropicalSeasonalForest]: "#708456",
+  [BIOME.temperateDeciduousForest]: "#527052",
+  [BIOME.tropicalRainforest]: "#456a4b",
+  [BIOME.temperateRainforest]: "#41604d",
+  [BIOME.taiga]: "#3d503e",
+  [BIOME.tundra]: "#817663",
+  [BIOME.glacier]: "#d7e1df",
+  [BIOME.wetland]: "#416b58"
+};
+
 const PROVINCE_ID_BY_INDEX = new Map(DRAVAKH_PROVINCES.map((province, index) => [index + 1, province.id]));
 
 const isCoastal = (cell: number): boolean => pack.cells.c[cell].some(neighbor => pack.cells.h[neighbor] < 20);
@@ -118,6 +134,17 @@ function selectBiome(cell: number, provinceId: string): number {
   }
 }
 
+function applyDravakhVisualGeographyStyle(): void {
+  for (const biome of pack.biomes) {
+    const color = DRAVAKH_BIOME_COLORS[biome.i];
+    if (color) biome.color = color;
+  }
+
+  styles.relief.options.set = "gray";
+  styles.relief.options.size = 0.9;
+  styles.relief.options.density = 0.22;
+}
+
 function regenerateReliefDeterministically(): void {
   const originalRandom = Math.random;
   let state = 0x44524156;
@@ -205,6 +232,7 @@ export function applyDravakhGeography() {
     pack.cells.biome[cell] = biome;
   }
 
+  applyDravakhVisualGeographyStyle();
   regenerateReliefDeterministically();
   persistGeographyMetadata();
 
