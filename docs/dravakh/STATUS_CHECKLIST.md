@@ -40,9 +40,12 @@
 - [x] Province Placement v1 `.map` exported and successfully reloaded without territorial recomputation;
 - [x] second durable Province Placement v1 archive stored in Drive;
 - [x] 15/15 primary landmarks placed and approved;
-- [ ] Geographic Detail v1 completed and approved;
+- [x] Geographic Detail v1 completed and approved;
+- [x] Geographic Detail v1 `.map` exported and exactly reloaded;
+- [x] second durable Geographic Detail v1 archive stored in Drive;
+- [ ] Visual Finish v1 completed and approved;
 - [ ] principal routes created;
 - [ ] PR #1 ready to leave Draft;
 - [ ] PR #1 merged into `master`.
 
-Landmarks v1 is canonical and durably archived. Principal routes remain deferred during Geographic Detail v1.
+Geographic Detail v1 is canonical and durably archived. Principal routes remain deferred during Visual Finish v1.
