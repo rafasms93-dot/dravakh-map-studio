@@ -136,6 +136,64 @@ A second durable archive exists in the project Drive Milestones folder with ID:
 
 Physical and hydrology milestones remain preserved separately and must not be overwritten.
 
+## Approved landmark baseline
+
+**Landmarks v1 is canonical as of 2026-09-18.**
+
+Exactly one canonical primary landmark exists for each approved province:
+
+1. Rivermend — Castelo de Rhyven
+2. Harvest Hall — Salão de Goldmere
+3. Dreamrest — Cidadela de Velmora
+4. Ironforge Reaches — Forja de Mordrake
+5. White Keep — Fortaleza Branca
+6. Sanctum Crest — Sanctum de Asterion
+7. Citadel Reach — Cidadela de Caelith
+8. King's Road — Centro administrativo da Estrada Real
+9. Swiftstride Pass — Fortim de passagem
+10. Hearthkeep — Fortaleza da Coroa
+11. Soldier's Wall — Grande Muralha
+12. Alliance High — Palácio de Aerenth
+13. Highhallow — Templo-Fortaleza de Elyrion
+14. Highfest Haven — Porto de Merraval
+15. Ironbank Ridge — Fortaleza-Cofre Ferrane
+
+Landmarks use native Azgaar markers as persistent cartographic points of interest rather than being forced into burg/city semantics. Canonical landmark markers are locked and pinned, retain their canonical note names, and are deterministically placed on valid cells inside their own provinces.
+
+Placement validation covers province containment, valid land, anchor proximity and geography-sensitive constraints such as coastal placement, river association, highland placement and Highhallow's insular feature.
+
+The default Dravakh map view now prioritizes pinned markers, so the 15 canonical landmarks remain visually legible while non-canonical Azgaar-generated markers remain preserved in map data.
+
+Canonical landmark milestone:
+
+`dravakh-map-v2-20260918-landmarks-v1.map`
+
+Size: `4,561,238 bytes`
+
+SHA-256:
+
+`1de3271d04d38fee37862f698a8148bbe0c93205a4971fc048090301670e51dc`
+
+Final validated head:
+
+`acd9cdb228cfd822e4e8bfbb3ec4d6b4ade0c3cc`
+
+Focused map gate:
+
+- run `35376241737`
+- job `105701471298`
+- artifact `10560172108`
+- artifact digest `sha256:87af2d5b7a84b8c79541ee8884cd1dcd86b3decfbae7f847b03a50f76dd67fcb`
+- result **success**
+
+The gate verified that the complete landmark layer survives a real machine `.map` save/reload together with the approved terrain, hydrology and province state.
+
+A second durable archive exists in the project Drive Milestones folder with ID:
+
+`1lBfDcvriok1X1h9_UzckKZOsOmcD3sY_`
+
+All earlier physical, hydrology and province milestones remain preserved separately.
+
 ## Historical lost Work-session state
 
 A prior Azgaar session in ChatGPT Work created a browser-local reconstruction that was lost before durable export. It remains historical context only and does not override the current canonical physical, hydrology or province milestones.
@@ -157,8 +215,8 @@ The dedicated `Validate Dravakh Map Gate` workflow is the focused runtime gate f
 
 ## Next technical milestone
 
-**Place and approve all 15 canonical primary landmarks on top of Province Placement v1.**
+**Geographic Detail v1 — enrich the approved world without changing its canonical macrostructure.**
 
-Landmarks must remain physically plausible and belong to their approved provinces.
+The next gate may refine secondary terrain, vegetation, local water features, coast detail and other non-destructive geographic texture while preserving the approved physical baseline, Hydrology v1, Province Placement v1 and Landmarks v1.
 
-Do not create principal routes until the physical baseline, hydrology, 15 provinces and 15/15 main landmarks are all verified.
+Principal routes remain deferred during this next gate.
