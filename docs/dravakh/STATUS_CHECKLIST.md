@@ -26,6 +26,9 @@
 - [x] Dravakh validation passed on Province Placement v1 head;
 - [x] GitHub Pages deployment verified on Province Placement v1 head;
 - [x] focused map Playwright gate passed on Province Placement v1 head;
+- [x] focused map Playwright gate passed on Landmarks v1 final head;
+- [x] Landmarks v1 `.map` exported and exactly reloaded;
+- [x] second durable Landmarks v1 archive stored in Drive;
 - [ ] full repository Playwright workflow completed successfully on Province Placement v1 head;
 - [ ] Nix package workflow green on Province Placement v1 head;
 - [x] physical baseline visually approved inside Azgaar runtime;
@@ -36,9 +39,10 @@
 - [x] Highhallow province remains fully insular;
 - [x] Province Placement v1 `.map` exported and successfully reloaded without territorial recomputation;
 - [x] second durable Province Placement v1 archive stored in Drive;
-- [ ] 15/15 primary landmarks placed and approved;
+- [x] 15/15 primary landmarks placed and approved;
+- [ ] Geographic Detail v1 completed and approved;
 - [ ] principal routes created;
 - [ ] PR #1 ready to leave Draft;
 - [ ] PR #1 merged into `master`.
 
-Principal routes remain blocked until the 15/15 primary-landmark gate is complete.
+Landmarks v1 is canonical and durably archived. Principal routes remain deferred during Geographic Detail v1.
