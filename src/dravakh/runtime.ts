@@ -7,6 +7,7 @@ import { drawRelief } from "@/renderers/draw-relief-icons";
 import { applyDravakhGeography } from "./geography";
 import { applyDravakhLandmarks } from "./landmarks";
 import { applyDravakhProvinces } from "./provinces";
+import { applyDravakhVisualFinish } from "./visual-finish";
 
 type SaveMethod = "storage" | "machine" | "dropbox";
 
@@ -26,6 +27,9 @@ type StudioWindow = Window & {
   };
   DravakhGeography?: {
     apply: typeof applyDravakhGeography;
+  };
+  DravakhVisualFinish?: {
+    apply: typeof applyDravakhVisualFinish;
   };
 };
 
@@ -179,6 +183,17 @@ function applyCanonicalGeographyLayer(): void {
   drawBiomes();
   drawRelief();
   window.dispatchEvent(new CustomEvent("dravakh:geography-applied", { detail: summary }));
+  applyCanonicalVisualFinishLayer();
+}
+
+function applyCanonicalVisualFinishLayer(): void {
+  const template = document.getElementById("templateInput") as HTMLInputElement | null;
+  if (template?.value !== "dravakh") return;
+
+  const summary = applyDravakhVisualFinish();
+  document.getElementById("markers")?.setAttribute("pinned", "1");
+  drawMarkers();
+  window.dispatchEvent(new CustomEvent("dravakh:visual-finish-applied", { detail: summary }));
 }
 
 function installRuntime(): void {
@@ -190,6 +205,7 @@ function installRuntime(): void {
   (window as StudioWindow).DravakhProvinces = { apply: applyDravakhProvinces };
   (window as StudioWindow).DravakhLandmarks = { apply: applyDravakhLandmarks };
   (window as StudioWindow).DravakhGeography = { apply: applyDravakhGeography };
+  (window as StudioWindow).DravakhVisualFinish = { apply: applyDravakhVisualFinish };
   window.addEventListener("map:generated", applyCanonicalProvinceLayer);
 
   const renderStatus = (): void => {
