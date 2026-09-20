@@ -1,6 +1,7 @@
 import { DRAVAKH_PROVINCES } from "@/data/dravakh-project";
 
 export const DRAVAKH_GEOGRAPHY_VERSION = "dravakh-geographic-detail-v1";
+const GEOGRAPHY_NOTE_ID = DRAVAKH_GEOGRAPHY_VERSION;
 
 const BIOME = {
   marine: 0,
@@ -133,9 +134,62 @@ function regenerateReliefDeterministically(): void {
   }
 }
 
-export function applyDravakhGeography() {
-  const before = Array.from(pack.cells.biome as ArrayLike<number>);
+function getProvinceBiomeCounts(): Map<number, Map<number, number>> {
   const provinceBiomeCounts = new Map<number, Map<number, number>>();
+  for (const cell of pack.cells.i) {
+    if (pack.cells.h[cell] < 20) continue;
+    const provinceIndex = pack.cells.province[cell];
+    const biome = pack.cells.biome[cell];
+    const counts = provinceBiomeCounts.get(provinceIndex) ?? new Map<number, number>();
+    counts.set(biome, (counts.get(biome) ?? 0) + 1);
+    provinceBiomeCounts.set(provinceIndex, counts);
+  }
+  return provinceBiomeCounts;
+}
+
+function getSummary(changedCells: number, restored: boolean) {
+  const provinceBiomeCounts = getProvinceBiomeCounts();
+  return {
+    version: DRAVAKH_GEOGRAPHY_VERSION,
+    changedCells,
+    reliefIconCount: pack.relief.length,
+    restored,
+    provinces: DRAVAKH_PROVINCES.map((province, index) => ({
+      id: province.id,
+      name: province.name,
+      biomes: Object.fromEntries(provinceBiomeCounts.get(index + 1) ?? [])
+    }))
+  };
+}
+
+function hasPersistedCanonicalGeography(): boolean {
+  const metadata = notes.find(note => note.id === GEOGRAPHY_NOTE_ID);
+  if (metadata?.name !== "Dravakh Geographic Detail v1") return false;
+  if (!pack.relief?.length) return false;
+
+  for (const cell of pack.cells.i) {
+    if (pack.cells.h[cell] < 20) continue;
+    const provinceIndex = pack.cells.province[cell];
+    if (!PROVINCE_ID_BY_INDEX.has(provinceIndex)) return false;
+    if (pack.cells.biome[cell] === BIOME.marine) return false;
+  }
+
+  return true;
+}
+
+function persistGeographyMetadata(): void {
+  notes = notes.filter(note => note.id !== GEOGRAPHY_NOTE_ID);
+  notes.push({
+    id: GEOGRAPHY_NOTE_ID,
+    name: "Dravakh Geographic Detail v1",
+    legend: "Canonical deterministic biome and relief layer. Preserve on .map reload."
+  });
+}
+
+export function applyDravakhGeography() {
+  if (hasPersistedCanonicalGeography()) return getSummary(0, true);
+
+  const before = Array.from(pack.cells.biome as ArrayLike<number>);
 
   for (const cell of pack.cells.i) {
     if (pack.cells.h[cell] < 20) {
@@ -149,27 +203,15 @@ export function applyDravakhGeography() {
 
     const biome = selectBiome(cell, provinceId);
     pack.cells.biome[cell] = biome;
-
-    const counts = provinceBiomeCounts.get(provinceIndex) ?? new Map<number, number>();
-    counts.set(biome, (counts.get(biome) ?? 0) + 1);
-    provinceBiomeCounts.set(provinceIndex, counts);
   }
 
   regenerateReliefDeterministically();
+  persistGeographyMetadata();
 
   const changedCells = before.reduce(
     (count, biome, cell) => count + Number(pack.cells.h[cell] >= 20 && pack.cells.biome[cell] !== biome),
     0
   );
 
-  return {
-    version: DRAVAKH_GEOGRAPHY_VERSION,
-    changedCells,
-    reliefIconCount: pack.relief.length,
-    provinces: DRAVAKH_PROVINCES.map((province, index) => ({
-      id: province.id,
-      name: province.name,
-      biomes: Object.fromEntries(provinceBiomeCounts.get(index + 1) ?? [])
-    }))
-  };
+  return getSummary(changedCells, false);
 }
