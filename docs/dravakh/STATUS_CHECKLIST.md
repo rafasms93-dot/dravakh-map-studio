@@ -43,9 +43,12 @@
 - [x] Geographic Detail v1 completed and approved;
 - [x] Geographic Detail v1 `.map` exported and exactly reloaded;
 - [x] second durable Geographic Detail v1 archive stored in Drive;
-- [ ] Visual Finish v1 completed and approved;
+- [x] Visual Finish v1 completed and approved;
+- [x] Visual Finish v1 `.map` exported and exactly reloaded;
+- [x] second durable Visual Finish v1 archive stored in Drive;
+- [ ] Routes & Infrastructure v1 completed and approved;
 - [ ] principal routes created;
 - [ ] PR #1 ready to leave Draft;
 - [ ] PR #1 merged into `master`.
 
-Geographic Detail v1 is canonical and durably archived. Principal routes remain deferred during Visual Finish v1.
+Visual Finish v1 is canonical and durably archived. Routes & Infrastructure v1 is the next cartographic gate.
