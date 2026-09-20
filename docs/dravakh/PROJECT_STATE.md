@@ -194,6 +194,61 @@ A second durable archive exists in the project Drive Milestones folder with ID:
 
 All earlier physical, hydrology and province milestones remain preserved separately.
 
+## Approved geographic-detail baseline
+
+**Geographic Detail v1 is canonical as of 2026-09-20.**
+
+This milestone adds deterministic province-aware biome identity and secondary relief presentation without changing the approved structural map.
+
+Preserved invariants:
+
+- coastline and land/water mask;
+- Highhallow maritime channel and island separation;
+- Physical Baseline v1.1 heightmap;
+- Hydrology v1 river topology;
+- all 15 Province Placement v1 assignments;
+- all 15 Landmarks v1 cells and identities.
+
+Regional biome treatment now distinguishes wetlands and alluvial lowlands, temperate forests, exposed highlands, taiga, tundra and glacier zones according to the approved province identities. The authoring palette was deliberately muted and the relief layer changed to a gray, lower-density treatment to stay aligned with the Dark Fantasy Heráldico Premium direction.
+
+Canonical relief presentation:
+
+- set: `gray`
+- size: `0.9`
+- density: `0.22`
+
+Geographic Detail v1 persists a canonical metadata note and, after `.map` reload, preserves the stored biome array, palette, relief style and deterministic relief icons rather than recomputing from derived packed-cell values.
+
+Canonical geographic-detail milestone:
+
+`dravakh-map-v2-20260920-geographic-detail-v1.map`
+
+Size: `4,836,553 bytes`
+
+SHA-256:
+
+`b1204c9ff2407923dfa0275c760739718335bf2c859665fc3198007498f2d390`
+
+Final validated head:
+
+`ae7f0f6d64c87b007ee9a67c927db58416b5f86c`
+
+Focused map gate:
+
+- run `35531601933`
+- job `106133071551`
+- artifact `10611426383`
+- artifact digest `sha256:dd2d8235ca0207e45482e2e79f4079877ba0ae7ade89da5e17eb158f157b43a5`
+- result **success**
+
+The strengthened persistence gate reproduced exactly the saved terrain, rivers, states, provinces, landmarks, biome IDs, biome palette, relief style, geographic metadata and deterministic relief icon array.
+
+A second durable archive exists in the project Drive Milestones folder with ID:
+
+`1lyf9stSSZhTZr3Fl4dsFYCpusdvSymRo`
+
+No principal routes were created during Geographic Detail v1.
+
 ## Historical lost Work-session state
 
 A prior Azgaar session in ChatGPT Work created a browser-local reconstruction that was lost before durable export. It remains historical context only and does not override the current canonical physical, hydrology or province milestones.
@@ -215,8 +270,8 @@ The dedicated `Validate Dravakh Map Gate` workflow is the focused runtime gate f
 
 ## Next technical milestone
 
-**Geographic Detail v1 — enrich the approved world without changing its canonical macrostructure.**
+**Visual Finish v1 — polish the cartographic presentation without changing the canonical world structure.**
 
-The next gate may refine secondary terrain, vegetation, local water features, coast detail and other non-destructive geographic texture while preserving the approved physical baseline, Hydrology v1, Province Placement v1 and Landmarks v1.
+This gate may refine border hierarchy, river/coast treatment, material feel, vignette, landmark-symbol presentation and overall visual hierarchy while preserving Physical Baseline v1.1, Hydrology v1, Province Placement v1, Landmarks v1 and Geographic Detail v1.
 
-Principal routes remain deferred during this next gate.
+Principal routes remain deferred until a dedicated infrastructure/route gate is explicitly opened.
