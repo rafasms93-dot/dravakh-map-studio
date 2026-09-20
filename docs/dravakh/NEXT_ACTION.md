@@ -1,6 +1,6 @@
 # Next action
 
-The physical-baseline, hydrology and 15-province gates are complete.
+The physical-baseline, hydrology, 15-province and 15-landmark gates are complete.
 
 ## Current validated state
 
@@ -30,19 +30,44 @@ SHA-256:
 
 `24daf57e2b8a69102abf0cbd67a1d96a94ee75ccea45ff4fba68651eb803cbe0`
 
-Province validation confirmed:
+### Landmarks v1
 
-- one kingdom: Dravakh;
-- exactly 15 canonical provinces and no extras;
-- 100% of valid land assigned to the kingdom and one canonical province;
-- all 15 canonical anchors resolve to the correct province core;
-- primary territorial continuity for every province;
-- Highhallow remains insular and exclusive to its eastern main island;
-- machine `.map` save/reload preserves terrain, rivers, state assignment, province assignment and canonical identities;
-- a runtime bug that recalculated borders after reload was detected and corrected;
-- a second durable archive exists in the project Drive Milestones folder.
+`dravakh-map-v2-20260918-landmarks-v1.map`
 
-The dedicated `Validate Dravakh Map Gate` workflow is green for Province Placement v1.
+Size: `4,561,238 bytes`
+
+SHA-256:
+
+`1de3271d04d38fee37862f698a8148bbe0c93205a4971fc048090301670e51dc`
+
+Landmark validation confirmed:
+
+- exactly 15 canonical primary landmarks;
+- one landmark bound to each of the 15 canonical provinces;
+- every landmark sits on valid land inside its own province;
+- coastal landmarks satisfy coastal placement where required;
+- Rivermend and Harvest Hall landmarks preserve river association;
+- highland landmarks satisfy the approved elevated-terrain rule;
+- Highhallow's landmark remains on the insular Highhallow feature;
+- canonical landmark names are persisted in Azgaar notes;
+- markers are locked and pinned against random regeneration;
+- the default Dravakh marker view prioritizes the 15 pinned canonical landmarks without deleting Azgaar's auxiliary marker data;
+- machine `.map` save/reload preserves the complete landmark layer exactly.
+
+Final validated landmark head:
+
+`acd9cdb228cfd822e4e8bfbb3ec4d6b4ade0c3cc`
+
+Focused map gate:
+
+- run `35376241737`
+- job `105701471298`
+- artifact `10560172108`
+- artifact digest `sha256:87af2d5b7a84b8c79541ee8884cd1dcd86b3decfbae7f847b03a50f76dd67fcb`
+
+Second durable Drive archive:
+
+`1lBfDcvriok1X1h9_UzckKZOsOmcD3sY_`
 
 ## Current source state
 
@@ -53,24 +78,23 @@ The dedicated `Validate Dravakh Map Gate` workflow is green for Province Placeme
 - canonical hydrology constraints/evidence: `maps/dravakh-hydrology-plan-v1.json`;
 - canonical province/landmark anchors: `maps/dravakh-province-anchors-v1.json`;
 - deterministic territorial partition: `src/dravakh/provinces.ts`;
+- canonical landmark layer: `src/dravakh/landmarks.ts`;
 - canonical runtime integration/persistence guard: `src/dravakh/runtime.ts`;
 - focused runtime gate: `.github/workflows/validate-dravakh-map-gate.yml`.
 
-## Next runtime gate — 15/15 primary landmarks
+## Next runtime gate — Geographic Detail v1
 
-1. use Province Placement v1 as the immutable territorial baseline;
-2. place exactly one approved primary landmark for each canonical province;
-3. place each landmark on a valid land cell inside its own province;
-4. preserve the approved house/category/landmark bindings;
-5. keep landmark placement physically plausible relative to relief, rivers, coasts and provincial function;
-6. verify Hearthkeep's sovereign landmark remains central and politically legible;
-7. verify Soldier's Wall expresses the northern choke without inventing Discipline Engine behavior;
-8. verify Highhallow's landmark remains fully insular;
-9. add runtime regression checks for 15/15 landmark identities and province containment;
-10. visually review all 15 placements;
-11. export and reload a new machine `.map` milestone;
-12. archive a second durable copy before proceeding.
+1. treat Landmarks v1 as the immutable structural baseline;
+2. preserve the approved coastline, Highhallow channel, main relief systems and dominant hydrology;
+3. preserve all 15 province assignments and all 15 canonical landmark cells;
+4. improve secondary relief and local geographic texture only where it increases world readability;
+5. enrich vegetation/biome expression while preserving province identity and physical plausibility;
+6. refine local coast, lake, tributary and valley detail without changing approved macro-hydrology;
+7. verify Sanctum, White Keep, Ironforge, Ironbank and Alliance High remain geographically distinct;
+8. preserve Dreamrest, Harvest Hall, Rivermend and Hearthkeep as readable lowland/basin regions;
+9. keep Highhallow visibly insular at all zoom levels;
+10. add focused regression checks for any new deterministic geography rules;
+11. visually review the complete map before declaring Geographic Detail v1 canonical;
+12. export/reload a new durable `.map` milestone only after the gate passes.
 
-**Do not create principal routes yet.**
-
-Routes remain deferred until the 15/15 primary-landmark gate is complete.
+**Do not create principal routes during Geographic Detail v1.**
