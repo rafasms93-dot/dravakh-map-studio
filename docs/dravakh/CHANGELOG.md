@@ -1,5 +1,27 @@
 # Dravakh fork changelog
 
+## 2026-09-20 — Geographic Detail v1 approved
+
+- added `src/dravakh/geography.ts` as a deterministic province-aware biome and secondary-relief layer;
+- preserved the approved coastline, land/water mask, Highhallow maritime separation, Physical Baseline v1.1, Hydrology v1, Province Placement v1 and all 15 Landmarks v1 cells;
+- introduced province-specific biome rules driven by altitude, river proximity, coast proximity and local temperature;
+- established distinct alluvial, forest, exposed-highland, taiga, tundra and glacier identities across the approved provinces;
+- replaced the brighter default biome colors with a muted Dravakh cartographic palette aligned with Dark Fantasy Heráldico Premium;
+- rejected the first relief presentation as too dense/colorful and refined the canonical treatment to gray relief, size `0.9`, density `0.22`;
+- made relief icon generation deterministic using a fixed seeded pseudo-random sequence;
+- added canonical Geographic Detail metadata to the `.map` so reloaded maps preserve the saved biome and relief state instead of recomputing from derived packed-cell values;
+- fixed the reload drift detected by the first persistence gate;
+- strengthened the focused Playwright gate to compare terrain, river topology, states, provinces, landmarks, biome IDs, biome palette, relief style, geographic metadata and every deterministic relief icon across machine save/reload;
+- visually approved the refined biome/relief rendering with Highhallow still visibly insular and regional geography remaining legible;
+- passed final focused map-gate run `35531601933`, job `106133071551`, on head `ae7f0f6d64c87b007ee9a67c927db58416b5f86c`;
+- archived final artifact `10611426383`, digest `sha256:dd2d8235ca0207e45482e2e79f4079877ba0ae7ade89da5e17eb158f157b43a5`;
+- machine-exported `dravakh-map-v2-20260920-geographic-detail-v1.map`, size `4,836,553 bytes`;
+- recorded milestone SHA-256 `b1204c9ff2407923dfa0275c760739718335bf2c859665fc3198007498f2d390`;
+- archived a second durable copy in the project Drive Milestones folder with file ID `1lyf9stSSZhTZr3Fl4dsFYCpusdvSymRo`;
+- created `docs/dravakh/GEOGRAPHIC_DETAIL_V1.md`;
+- advanced the next official gate to Visual Finish v1;
+- created no principal routes.
+
 ## 2026-09-18 — Landmarks v1 approved
 
 - added `src/dravakh/landmarks.ts` as a canonical 15-landmark layer using native persistent Azgaar markers;
