@@ -1,0 +1,51 @@
+{
+  "id": "dravakh-rivermend-foundation-v1",
+  "status": "prepared-remote-pending-integration",
+  "province": {
+    "id": "rivermend",
+    "name": "Rivermend",
+    "canonicalLandmark": "Castelo de Rhyven",
+    "canonicalAnchor": { "x": 0.49, "y": 0.69 },
+    "environment": ["wetland", "grassland"],
+    "role": "centre-south hydrological basin"
+  },
+  "protected": {
+    "rebuildProvince": false,
+    "moveCanonicalLandmark": false,
+    "alterHydrology": false,
+    "alterBiomeIdentity": false,
+    "promoteWorldRoutes": false,
+    "createCanonicalRouteIds": false
+  },
+  "worldLocationModel": {
+    "hierarchy": ["PROVINCE", "REGION_OR_LOCALITY", "PLACE_OR_POI"],
+    "firstRegion": {
+      "id": "ponte-rasa",
+      "name": "Ponte Rasa",
+      "type": "REGION_OR_LOCALITY",
+      "provinceId": "rivermend",
+      "placementStatus": "PENDING_GEOMETRY_RESOLUTION",
+      "placementRule": {
+        "mustRemainInsideProvince": true,
+        "mustRelateToHydrology": true,
+        "preferExistingCrossingOrRouteJunction": true,
+        "mustAvoidCanonicalLandmarkCollision": true,
+        "mustLeaveExpansionSpace": true,
+        "mustNotBePlacedForAestheticsOnly": true
+      }
+    }
+  },
+  "remoteMode": {
+    "scope": "infrastructure-only",
+    "visualFinishChangesAllowed": false,
+    "humanVisualReview": "PENDING",
+    "mayProceedWithoutHumanVisualApproval": true,
+    "mayLeaveProvince": false
+  },
+  "integrationPrerequisites": [
+    "sync remote repository with post-ce12e3bf local work",
+    "recover Orders 015-017 route artifacts in source-controlled state",
+    "resolve Ponte Rasa against current route groups and junction topology",
+    "run deterministic save/reload gate before milestone promotion"
+  ]
+}
